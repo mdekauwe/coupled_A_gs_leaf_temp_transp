@@ -83,11 +83,7 @@ class CoupledModel(object):
 
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
-
-            print Cs
             Cs = Ca - An / gbc
-            print Cs
-            sys.exit()
             dleaf = et * pressure / gv
 
             print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
