@@ -16,10 +16,9 @@ import numpy as np
 import os
 import math
 
-from fit_farquhar_model.farquhar_model import FarquharC3
+from farq import FarquharC3
 from stomatal_conductance_models import StomtalConductance
 from leaf_energy_balance import LeafEnergyBalance
-
 
 class CoupledModel(object):
     """Iteratively solve leaf temp, ci, gs and An."""
