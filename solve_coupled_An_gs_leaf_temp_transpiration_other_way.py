@@ -51,7 +51,7 @@ class CoupledModel(object):
         # Ratio of Gbh:Gbc
         self.GBHGBC = 1.32
         self.deg2kelvin = 273.15
-
+        self.kpa_2_pa = 1000.
 
     def main(self, tair, par, vpd, wind, pressure):
 
@@ -72,6 +72,7 @@ class CoupledModel(object):
         iter = 0
         while True:
 
+
             (An, Acn,
              Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
                                           Jmax25=self.Jmax25,
@@ -81,7 +82,7 @@ class CoupledModel(object):
                                           deltaSj=self.deltaSj,
                                           deltaSv=self.deltaSv,
                                           Rd25=self.Rd25, Hdv=self.Hdv,
-                                          Hdj=self.Hdj, vpd=vpd)
+                                          Hdj=self.Hdj, vpd=dleaf)
             gs = S.leuning(dleaf, An, Cs)
 
             (new_tleaf, et, gbH, gv) = L.calc_leaf_temp(Tleaf, tair, gs, par,

@@ -51,7 +51,7 @@ class CoupledModel(object):
         # Ratio of Gbh:Gbc
         self.GBHGBC = 1.32
         self.deg2kelvin = 273.15
-
+        self.kpa_2_pa = 1000.
 
     def main(self, tair, par, vpd, wind, pressure):
 
