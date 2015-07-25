@@ -39,7 +39,12 @@ class PenmanMonteith(object):
 
     def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gv,
                 rnet):
-
+        """
+        Rnet: J m-2 s-1
+        VPD needs to be in Pa, see conversion below
+        GH boundary layer conductance to heat, mol m-2 s-1
+        GV conductance to water vapour, mol m-2 s-1
+        """
         # latent heat of water vapour at air temperature (j mol-1)
         lambda_et = (self.h2olv0 - 2.365e3 * tair) * self.h2omw
 
@@ -119,6 +124,7 @@ class PenmanMonteith(object):
 
     def calc_rnet(self, pressure, par, tair, tair_k, tleaf_k, vpd):
 
+        mj_to_j = 1E6
         umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
         par *= umol_m2_s_to_W_m2
 
@@ -133,6 +139,13 @@ class PenmanMonteith(object):
         isothermal_net_lw = rlw_up - rlw_down
 
         # isothermal net radiation (W m-2)
+        rnet = self.leaf_absorptance * par - isothermal_net_lw
+
+
+        #1 MJ m-2 d-1 = 1000000 J m-2 d-1 / 86400 s d-1
+        #             = 11.574 J m-2 s-1
+        #             = 11.574 W m-2
+        rnet /= 11.574 * mj_to_j
         return (self.leaf_absorptance * par - isothermal_net_lw)
 
     def calc_slope_of_saturation_vapour_pressure_curve(self, tair):
