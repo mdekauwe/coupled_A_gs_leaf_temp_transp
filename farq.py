@@ -214,7 +214,6 @@ class FarquharC3(object):
         g1 = 9.0
         D0 = 1.5 # kpa
 
-
         gsdiva = g1 / (Ci - gamma) / (1.0 + vpd / D0)
 
         # Solution when Rubisco activity is limiting
@@ -222,9 +221,9 @@ class FarquharC3(object):
         B = ((1.0 - Ci * gsdiva) * (Vcmax - Rd) + g0 * (Km - Ci) - gsdiva *
              (Vcmax * gamma_star + Km * Rd))
         C = -(1.0 - Ci * gsdiva) * (Vcmax * gamma_star + Km * Rd) - g0 * Km * Ci
-        cic = self.quadratic_large(a=A, b=B, c=C)
+        Cic = self.quadratic_large(a=A, b=B, c=C)
 
-        Ac = Vcmax * (cic - gamma_star) / (cic + Km)
+        Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
 
         # Solution when electron transport rate is limiting
         Vj = J / 4.0
@@ -233,57 +232,21 @@ class FarquharC3(object):
              gsdiva * (Vj * gamma_star + 2.* gamma_star * Rd))
         C = - ((1.0 - Ci * gsdiva) * gamma_star * (Vj + 2.0 * Rd) -
                 g0 * 2. * gamma_star * Ci)
-        cij = self.quadratic_large(a=A, b=B, c=C)
+        Cij = self.quadratic_large(a=A, b=B, c=C)
 
-        Aj = Vj * (cij - gamma_star) / (cij + 2. * gamma_star)
+        Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
+
 
         An = np.minimum(Ac, Aj) - Rd
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-        """
-        # Rubisco carboxylation limited rate of photosynthesis
-        Ac = self.assim(Ci, gamma_star, a1=Vcmax, a2=Km)
+        if np.minimum(Ac, Aj) == Ac:
+            Ci = Cic
+        elif np.minimum(Ac, Aj) == Aj:
+            Ci = Cij
 
-        # Light-limited rate of photosynthesis allowed by RuBP regeneration
-        Aj = self.assim(Ci, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
-
-        # option for the user to specify the transition point
-        if self.change_over_pt is not None:
-            A = np.where(Ci<self.change_over_pt, Ac, Aj)
-        else:
-            # Photosynthesis estimated using hyperbolic minimum of Ac and Aj to
-            # effectively smooth over discontinuity when moving from light/electron
-            # transport limited to rubisco limited photosynthesis
-            # except if Ci < 150 in which case it is always Rubisco limited
-            arg = ((Ac + Aj - \
-                   np.sqrt((Ac + Aj)**2 - 4.0 * self.theta_hyperbol * Ac * Aj)) /
-                  (2.0 * self.theta_hyperbol))
-
-            # By default we assume a everything under Ci<150 is Ac limited
-            A = np.where(Ci < 150.0, Ac, arg)
-
-            # Specifically for Angelica's data...force Ac fit through the first
-            # X points.
-            if self.force_vcmax_fit_pts is not None:
-                indx = self.force_vcmax_fit_pts - 1 # indexed from zero
-                A = np.where(Ci <= Ci[indx] , Ac, A)
-                indx += 1 # use all the rest for Aj limited...
-                A = np.where(Ci >= Ci[indx] , Aj, A)
-
-            # Force the fit through at least the final point-ish
-            elif self.force_vcmax_fit_pts is None:
-                A = np.where(Ci > np.max(Ci) - 10.0, Aj, A)
-            else:
-                err_msg = "error fitting, are you suppling the correct args?"
-                raise AttributeError, err_msg
-
-        # net assimilation rates.
-        An = A - Rd
-        Acn = Ac - Rd
-        Ajn = Aj - Rd
-        """
-        return An, Acn, Ajn
+        return An, Acn, Ajn, Ci
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):
         """ Check the user supplied arguments, either they supply the values

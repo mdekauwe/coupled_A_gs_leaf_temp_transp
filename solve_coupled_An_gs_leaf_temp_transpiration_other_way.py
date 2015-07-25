@@ -71,11 +71,11 @@ class CoupledModel(object):
         while True:
 
             (An, Acn,
-             Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+             Ajn, Cs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
                                           Jmax25=Jmax25, Vcmax25=Vcmax25,
                                           Q10=Q10, Eaj=Eaj, Eav=Eav,
                                           deltaSj=deltaSj, deltaSv=deltaSv,
-                                          Rd25=Rd25, Hdv=Hdv, Hdj=Hdj)
+                                          Rd25=Rd25, Hdv=Hdv, Hdj=Hdj, vpd=vpd)
             gs = S.leuning(dleaf, An, Cs)
 
             (new_tleaf, et, gbH, gv) = L.calc_leaf_temp(Tleaf, tair, gs, par,
@@ -83,7 +83,11 @@ class CoupledModel(object):
 
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
+
+            print Cs
             Cs = Ca - An / gbc
+            print Cs
+            sys.exit()
             dleaf = et * pressure / gv
 
             print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
@@ -99,12 +103,12 @@ class CoupledModel(object):
             iter += 1
 
         # Now recalculate new An and gs based on resolved vpd, ci, tleaf
-        (An, Acn, Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+        (An, Acn, Ajn, Cs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
                                                Jmax25=Jmax25, Vcmax25=Vcmax25,
                                                Q10=Q10, Eaj=Eaj,
                                                Eav=Eav, deltaSj=deltaSj,
                                                deltaSv=deltaSv, Rd25=Rd25,
-                                               Hdv=Hdv, Hdj=Hdj)
+                                               Hdv=Hdv, Hdj=Hdj, vpd=vpd)
         gs = S.leuning(dleaf, An, Cs)
 
         print
