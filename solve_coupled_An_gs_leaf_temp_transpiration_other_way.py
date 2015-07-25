@@ -71,7 +71,7 @@ class CoupledModel(object):
         while True:
 
             (An, Acn,
-             Ajn, Cs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+             Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
                                           Jmax25=Jmax25, Vcmax25=Vcmax25,
                                           Q10=Q10, Eaj=Eaj, Eav=Eav,
                                           deltaSj=deltaSj, deltaSv=deltaSv,
@@ -103,7 +103,7 @@ class CoupledModel(object):
             iter += 1
 
         # Now recalculate new An and gs based on resolved vpd, ci, tleaf
-        (An, Acn, Ajn, Cs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+        (An, Acn, Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
                                                Jmax25=Jmax25, Vcmax25=Vcmax25,
                                                Q10=Q10, Eaj=Eaj,
                                                Eav=Eav, deltaSj=deltaSj,

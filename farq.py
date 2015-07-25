@@ -241,12 +241,7 @@ class FarquharC3(object):
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-        if np.minimum(Ac, Aj) == Ac:
-            Ci = Cic
-        elif np.minimum(Ac, Aj) == Aj:
-            Ci = Cij
-
-        return An, Acn, Ajn, Ci
+        return An, Acn, Ajn
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):
         """ Check the user supplied arguments, either they supply the values
