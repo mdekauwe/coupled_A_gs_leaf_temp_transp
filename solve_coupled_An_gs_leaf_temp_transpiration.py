@@ -73,10 +73,14 @@ class CoupledModel(object):
 
             (An, Acn,
              Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
-                                          Jmax25=Jmax25, Vcmax25=Vcmax25,
-                                          Q10=Q10, Eaj=Eaj, Eav=Eav,
-                                          deltaSj=deltaSj, deltaSv=deltaSv,
-                                          Rd25=Rd25, Hdv=Hdv, Hdj=Hdj)
+                                          Jmax25=self.Jmax25,
+                                          Vcmax25=self.Vcmax25,
+                                          Q10=self.Q10, Eaj=self.Eaj,
+                                          Eav=self.Eav,
+                                          deltaSj=self.deltaSj,
+                                          deltaSv=self.deltaSv,
+                                          Rd25=self.Rd25, Hdv=self.Hdv,
+                                          Hdj=self.Hdj)
             gs = S.leuning(dleaf, An, Cs)
 
             (new_tleaf, et, gbH, gv) = L.calc_leaf_temp(Tleaf, tair, gs, par,
@@ -100,12 +104,16 @@ class CoupledModel(object):
             iter += 1
 
         # Now recalculate new An and gs based on resolved vpd, ci, tleaf
-        (An, Acn, Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
-                                               Jmax25=Jmax25, Vcmax25=Vcmax25,
-                                               Q10=Q10, Eaj=Eaj,
-                                               Eav=Eav, deltaSj=deltaSj,
-                                               deltaSv=deltaSv, Rd25=Rd25,
-                                               Hdv=Hdv, Hdj=Hdj)
+        (An, Acn,
+        Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+                                     Jmax25=self.Jmax25,
+                                     Vcmax25=self.Vcmax25,
+                                     Q10=self.Q10, Eaj=self.Eaj,
+                                     Eav=self.Eav,
+                                     deltaSj=self.deltaSj,
+                                     deltaSv=self.deltaSv,
+                                     Rd25=self.Rd25, Hdv=self.Hdv,
+                                     Hdj=self.Hdj)
         gs = S.leuning(dleaf, An, Cs)
 
         print

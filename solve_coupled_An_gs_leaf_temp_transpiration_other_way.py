@@ -22,6 +22,7 @@ from leaf_energy_balance import LeafEnergyBalance
 
 class CoupledModel(object):
     """Iteratively solve leaf temp, ci, gs and An."""
+
     def __init__(self, g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
                  deltaSv, Hdv, Hdj, Q10, Ca, iter_max=100):
 
@@ -67,15 +68,20 @@ class CoupledModel(object):
         print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
         print
 
+
         iter = 0
         while True:
 
             (An, Acn,
              Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
-                                          Jmax25=Jmax25, Vcmax25=Vcmax25,
-                                          Q10=Q10, Eaj=Eaj, Eav=Eav,
-                                          deltaSj=deltaSj, deltaSv=deltaSv,
-                                          Rd25=Rd25, Hdv=Hdv, Hdj=Hdj, vpd=vpd)
+                                          Jmax25=self.Jmax25,
+                                          Vcmax25=self.Vcmax25,
+                                          Q10=self.Q10, Eaj=self.Eaj,
+                                          Eav=self.Eav,
+                                          deltaSj=self.deltaSj,
+                                          deltaSv=self.deltaSv,
+                                          Rd25=self.Rd25, Hdv=self.Hdv,
+                                          Hdj=self.Hdj, vpd=vpd)
             gs = S.leuning(dleaf, An, Cs)
 
             (new_tleaf, et, gbH, gv) = L.calc_leaf_temp(Tleaf, tair, gs, par,
@@ -99,12 +105,16 @@ class CoupledModel(object):
             iter += 1
 
         # Now recalculate new An and gs based on resolved vpd, ci, tleaf
-        (An, Acn, Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
-                                               Jmax25=Jmax25, Vcmax25=Vcmax25,
-                                               Q10=Q10, Eaj=Eaj,
-                                               Eav=Eav, deltaSj=deltaSj,
-                                               deltaSv=deltaSv, Rd25=Rd25,
-                                               Hdv=Hdv, Hdj=Hdj, vpd=vpd)
+        (An, Acn,
+        Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+                                     Jmax25=self.Jmax25,
+                                     Vcmax25=self.Vcmax25,
+                                     Q10=self.Q10, Eaj=self.Eaj,
+                                     Eav=self.Eav,
+                                     deltaSj=self.deltaSj,
+                                     deltaSv=self.deltaSv,
+                                     Rd25=self.Rd25, Hdv=self.Hdv,
+                                     Hdj=self.Hdj, vpd=vpd)
         gs = S.leuning(dleaf, An, Cs)
 
         print
@@ -150,5 +160,5 @@ if __name__ == '__main__':
     Ca = 400.0
 
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                   deltaSv, Hdv, Hdj, Q10, Ca)
+                     deltaSv, Hdv, Hdj, Q10, Ca)
     C.main(tair, par, vpd, wind, pressure)
