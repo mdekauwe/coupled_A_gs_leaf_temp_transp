@@ -221,7 +221,7 @@ class FarquharC3(object):
         B = ((1.0 - Ci * gsdiva) * (Vcmax - Rd) + g0 * (Km - Ci) - gsdiva *
              (Vcmax * gamma_star + Km * Rd))
         C = -(1.0 - Ci * gsdiva) * (Vcmax * gamma_star + Km * Rd) - g0 * Km * Ci
-        Cic = self.quadratic_large(a=A, b=B, c=C)
+        Cic = self.quadratic(a=A, b=B, c=C, large=True)
 
         Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
 
@@ -232,7 +232,7 @@ class FarquharC3(object):
              gsdiva * (Vj * gamma_star + 2.* gamma_star * Rd))
         C = - ((1.0 - Ci * gsdiva) * gamma_star * (Vj + 2.0 * Rd) -
                 g0 * 2. * gamma_star * Ci)
-        Cij = self.quadratic_large(a=A, b=B, c=C)
+        Cij = self.quadratic(a=A, b=B, c=C, large=True))
 
         Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
 
@@ -241,7 +241,7 @@ class FarquharC3(object):
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-        
+
         return An, Acn, Ajn
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):
@@ -418,7 +418,7 @@ class FarquharC3(object):
 
         return Rd
 
-    def quadratic(self, a=None, b=None, c=None):
+    def quadratic(self, a=None, b=None, c=None, large=False):
         """ minimilist quadratic solution as root for J solution should always
         be positive, so I have excluded other quadratic solution steps. I am
         only returning the smallest of the two roots
@@ -442,32 +442,9 @@ class FarquharC3(object):
         # if < 0.0 then an imaginary root was found
         d = np.where(np.logical_or(d<=0, np.any(np.isnan(d))), -999.9, d)
         root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
-        #root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
-
-        return root1
-
-    def quadratic_large(self, a=None, b=None, c=None):
-        """ minimilist quadratic solution returning the largest of the two roots
-
-        Parameters:
-        ----------
-        a : float
-            co-efficient
-        b : float
-            co-efficient
-        c : float
-            co-efficient
-
-        Returns:
-        -------
-        val : float
-            positive root
-        """
-
-        d = b**2 - 4.0 * a * c # discriminant
-        # if < 0.0 then an imaginary root was found
-        d = np.where(np.logical_or(d<=0, np.any(np.isnan(d))), -999.9, d)
-        #root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
         root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
 
-        return root2
+        if large:
+            return root2
+        else:
+            return root1
