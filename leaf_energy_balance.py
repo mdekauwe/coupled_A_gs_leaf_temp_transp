@@ -48,22 +48,23 @@ class LeafEnergyBalance(object):
         tleaf_k = tleaf + self.DEG_TO_KELVIN
         tair_k = tair + self.DEG_TO_KELVIN
 
-        air_density = pressure * 1000.0 / (287.058 * tair_k)
-        cmolar = pressure * 1000.0 / (self.RGAS * tair_k)
+        air_density = pressure / (287.058 * tair_k)
+        cmolar = pressure  / (self.RGAS * tair_k)
+
 
 
         # W m-2 = J m-2 s-1
-        rnet = P.calc_rnet(pressure, par, tair, tair_k, tleaf_k, vpd)
+        rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
 
 
         #umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
         #par *= umol_m2_s_to_W_m2
         #albedo = 0.2
         #net_lw = (107.0 - 0.3 * tair)
-        #rnet_iso = max(0.0, par * (1.0 - albedo) - net_lw)
+        #rnet = max(0.0, par * (1.0 - albedo) - net_lw)
 
 
-        (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair, pressure,
+        (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair,
                                                 wind, gs, cmolar)
         (et, le_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
                                     gh, gv, rnet)
@@ -75,14 +76,13 @@ class LeafEnergyBalance(object):
         sensible_heat = Y * (rnet - le_et)
 
         # leaf-air temperature difference recalculated from energy balance.
-        # (same equation as above!)
         #new_Tleaf = (tair + sensible_heat /
         #             (self.cp * air_density * (gbH / cmolar)))
-        #print new_Tleaf, rnet_iso
+
         Tdiff = (rnet - le_et) / (self.cp * self.air_mass * gh)
         new_Tleaf = tair + Tdiff
 
-        #print new_Tleaf
+        #print new_Tleaf, rnet
         #sys.exit()
 
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     gs = 0.15
     par = 1000
     vpd = 2.0
-    pressure = 101.0
+    pressure = 101325.0
     wind = 2.0
     leaf_width = 0.02
     leaf_absorptance = 0.5 # leaf absorptance of solar radiation [0,1]

@@ -92,7 +92,7 @@ class CoupledModel(object):
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
-            dleaf = et * pressure / gv
+            dleaf = et * (pressure / 1000.0) / gv
 
 
 
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     tair = 20.0
     vpd = 2.0
     wind = 2.5
-    pressure = 101.0
+    pressure = 101325.0
     Ca = 400.0
 
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,

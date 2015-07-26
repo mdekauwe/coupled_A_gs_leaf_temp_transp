@@ -40,21 +40,22 @@ class PenmanMonteith(object):
     def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gv,
                 rnet):
         """
-        Rnet: J m-2 s-1
+        Rnet: J m-2 s-1 = W m-2
         VPD needs to be in Pa, see conversion below
         GH boundary layer conductance to heat, mol m-2 s-1
         GV conductance to water vapour, mol m-2 s-1
+        Pressure, Pa
+
         """
         # latent heat of water vapour at air temperature (j mol-1)
         lambda_et = (self.h2olv0 - 2.365E3 * tair) * self.h2omw
 
         # curve relating sat water vapour pressure to temperature (pa K-1)
         # kelvin conversion in func
-        slope = ((self.calc_esat(tair + 0.1, pressure) -
-                  self.calc_esat(tair, pressure)) / 0.1)
+        slope = (self.calc_esat(tair + 0.1) - self.calc_esat(tair)) / 0.1
 
         # psychrometric constant
-        gamma = self.cp * self.air_mass * pressure * 1000.0 / lambda_et
+        gamma = self.cp * self.air_mass * pressure / lambda_et
 
         # Y cancels in eqn 10
         arg1 = (slope * rnet + (vpd * self.kpa_2_pa) * gh * self.cp *
@@ -70,8 +71,7 @@ class PenmanMonteith(object):
         # to get to kg m2 d-1 or mm d-1
         return et / lambda_et, LE_et
 
-    def calc_conductances(self, tair_k, tleaf, tair, pressure, wind, gs,
-                          cmolar):
+    def calc_conductances(self, tair_k, tleaf, tair, wind, gs, cmolar):
         """
         Both forced and free convection contribute to exchange of heat and mass
         through leaf boundary layers at the wind speeds typically encountered
@@ -122,14 +122,14 @@ class PenmanMonteith(object):
 
         return (grn, gh, gbH, gv)
 
-    def calc_rnet(self, pressure, par, tair, tair_k, tleaf_k, vpd):
+    def calc_rnet(self, par, tair, tair_k, tleaf_k, vpd):
 
 
         umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
         par *= umol_m2_s_to_W_m2
 
         # atmospheric water vapour pressure (Pa)
-        ea = max(0.0, self.calc_esat(tair, pressure) - (vpd * self.kpa_2_pa))
+        ea = max(0.0, self.calc_esat(tair) - (vpd * self.kpa_2_pa))
 
         # eqn D4
         emissivity_atm = 0.642 * (ea / tair_k)**(1.0 / 7.0)
@@ -158,7 +158,7 @@ class PenmanMonteith(object):
         arg2 = t**2
         return (arg1 / arg2) * self.kpa_2_pa
 
-    def calc_esat(self, temp, pressure):
+    def calc_esat(self, temp):
         """
         Saturation vapor pressure (Pa K-1)
 
@@ -181,13 +181,13 @@ class PenmanMonteith(object):
         tair_k = tair + DEG_TO_KELVIN
 
         # density of dry air
-        air_density = pressure * 1000.0 / (287.058 * tair_k)
-        cmolar = pressure * 1000.0 / (RGAS * tair_k)
+        air_density = pressure  / (287.058 * tair_k)
+        cmolar = pressure  / (RGAS * tair_k)
 
-        rnet = P.calc_rnet(pressure, par, tair, tair_k, tleaf_k, vpd)
+        rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
 
-        (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair, pressure,
-                                                wind, gs, cmolar)
+        (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair,
+                                                 wind, gs, cmolar)
         (et, lambda_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
                                     gh, gv, rnet)
         return (et, lambda_et)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     tair = 20.0
     gs = 0.15
     vpd = 2.0
-    pressure = 101.0 # Pa
+    pressure = 101325.0 # Pa
     wind = 2.0
     leaf_width = 0.02
     leaf_absorptance = 0.5 # leaf absorptance of solar radiation [0,1]
