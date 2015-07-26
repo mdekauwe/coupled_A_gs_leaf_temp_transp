@@ -46,7 +46,7 @@ class PenmanMonteith(object):
         GV conductance to water vapour, mol m-2 s-1
         """
         # latent heat of water vapour at air temperature (j mol-1)
-        lambda_et = (self.h2olv0 - 2.365e3 * tair) * self.h2omw
+        lambda_et = (self.h2olv0 - 2.365E3 * tair) * self.h2omw
 
         # curve relating sat water vapour pressure to temperature (pa K-1)
         # kelvin conversion in func
@@ -124,7 +124,7 @@ class PenmanMonteith(object):
 
     def calc_rnet(self, pressure, par, tair, tair_k, tleaf_k, vpd):
 
-        mj_to_j = 1E6
+
         umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
         par *= umol_m2_s_to_W_m2
 
@@ -139,13 +139,9 @@ class PenmanMonteith(object):
         isothermal_net_lw = rlw_up - rlw_down
 
         # isothermal net radiation (W m-2)
+        # W m-2 = J m-2 s-1
         rnet = self.leaf_absorptance * par - isothermal_net_lw
 
-
-        #1 MJ m-2 d-1 = 1000000 J m-2 d-1 / 86400 s d-1
-        #             = 11.574 J m-2 s-1
-        #             = 11.574 W m-2
-        rnet /= 11.574 * mj_to_j
         return (self.leaf_absorptance * par - isothermal_net_lw)
 
     def calc_slope_of_saturation_vapour_pressure_curve(self, tair):
@@ -188,12 +184,12 @@ class PenmanMonteith(object):
         air_density = pressure * 1000.0 / (287.058 * tair_k)
         cmolar = pressure * 1000.0 / (RGAS * tair_k)
 
-        rnet_iso = P.calc_rnet(pressure, par, tair, tair_k, tleaf_k, vpd)
+        rnet = P.calc_rnet(pressure, par, tair, tair_k, tleaf_k, vpd)
 
         (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair, pressure,
                                                 wind, gs, cmolar)
         (et, lambda_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
-                                    gh, gv, rnet_iso)
+                                    gh, gv, rnet)
         return (et, lambda_et)
 
 if __name__ == '__main__':

@@ -241,6 +241,7 @@ class FarquharC3(object):
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
+        
         return An, Acn, Ajn
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):

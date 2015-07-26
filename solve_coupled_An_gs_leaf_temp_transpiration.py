@@ -147,7 +147,7 @@ if __name__ == '__main__':
     leaf_width = 0.02
 
     # hack to get around doing seperate sunlit/shaded leaves
-    leaf_absorptance = 0.5 # leaf absorptance of solar radiation [0,1]
+    leaf_absorptance = 0.8 # leaf absorptance of solar radiation [0,1]
 
 
     # variables though obviously fixed here.
