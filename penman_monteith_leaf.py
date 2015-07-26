@@ -181,10 +181,8 @@ class PenmanMonteith(object):
         tleaf_k = tleaf + DEG_TO_KELVIN
         tair_k = tair + DEG_TO_KELVIN
 
-        # density of dry air
         air_density = pressure  / (self.Rspecifc_dry_air * tair_k)
         cmolar = pressure  / (RGAS * tair_k)
-
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
 
         (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair,
