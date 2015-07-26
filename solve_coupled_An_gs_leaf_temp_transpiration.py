@@ -52,6 +52,7 @@ class CoupledModel(object):
         self.GBHGBC = 1.32
         self.deg2kelvin = 273.15
         self.kpa_2_pa = 1000.
+        self.pa_2_kpa = 1.0 / self.kpa_2_pa
 
     def main(self, tair, par, vpd, wind, pressure):
 
@@ -89,7 +90,7 @@ class CoupledModel(object):
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
-            dleaf = et * (pressure / self.kpa_2_pa) / gv # kPa
+            dleaf = et * (pressure) / gv * self.pa_2_kpa # kPa
 
             print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
 
