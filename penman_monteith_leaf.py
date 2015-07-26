@@ -36,6 +36,7 @@ class PenmanMonteith(object):
         self.RGAS = 8.314        # universal gas constant (mol-1 K-1)
         self.leaf_absorptance = leaf_absorptance
         self.leaf_width = leaf_width # (m)
+        self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
 
     def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gv,
                 rnet):
@@ -181,7 +182,7 @@ class PenmanMonteith(object):
         tair_k = tair + DEG_TO_KELVIN
 
         # density of dry air
-        air_density = pressure  / (287.058 * tair_k)
+        air_density = pressure  / (self.Rspecifc_dry_air * tair_k)
         cmolar = pressure  / (RGAS * tair_k)
 
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
