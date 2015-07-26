@@ -37,6 +37,9 @@ class PenmanMonteith(object):
         self.leaf_absorptance = leaf_absorptance
         self.leaf_width = leaf_width # (m)
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
+        self.GBVGBH = 1.075 # Ratio of Gbw:Gbh
+        self.GSVGSC = 1.57 # Ratio of Gsw:Gsc
+
 
     def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gv,
                 rnet):
@@ -85,11 +88,6 @@ class PenmanMonteith(object):
         Leuning 1995, appendix E
         Medlyn et al. 2007 appendix, for need for cmolar
         """
-        # Ratio of Gbw:Gbh
-        GBVGBH = 1.075
-
-        # Ratio of Gsw:Gsc
-        GSVGSC = 1.57
 
         # radiation conductance (mol m-2 s-1)
         grn = ((4.0 * self.sigma * tair_k**3 * self.emissivity_leaf) /
@@ -115,8 +113,8 @@ class PenmanMonteith(object):
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
 
-        gbv = GBVGBH * gbH
-        gsv = GSVGSC * gs
+        gbv = self.GBVGBH * gbH
+        gsv = self.GSVGSC * gs
 
         # total leaf conductance to water vapour (mol m-2 s-1)
         gv = (gbv * gsv) / (gbv + gsv)
@@ -151,7 +149,7 @@ class PenmanMonteith(object):
         Returns:
         --------
         slope : float
-            slope of saturation vapour pressure curve [kPa degC-1]
+            slope of saturation vapour pressure curve [Pa degC-1]
 
         """
         t = tair + 237.3
@@ -178,6 +176,7 @@ class PenmanMonteith(object):
         return e0 * math.exp(b * (Tk - T1) / (Tk - T2))
 
     def main(self, tleaf, tair, gs, vpd, pressure, wind, par):
+
         tleaf_k = tleaf + DEG_TO_KELVIN
         tair_k = tair + DEG_TO_KELVIN
 
