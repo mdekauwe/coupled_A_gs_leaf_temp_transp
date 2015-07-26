@@ -98,7 +98,7 @@ class PenmanMonteith(object):
         gbHw = 0.003 * math.sqrt(wind / self.leaf_width) * cmolar
 
         # grashof number
-        grashof_num = 1.6e8 * math.fabs(tleaf - tair) * self.leaf_width**3
+        grashof_num = 1.6E8 * math.fabs(tleaf - tair) * self.leaf_width**3
 
         # boundary layer conductance for free convection
         # (mol m-2 s-1)
@@ -108,8 +108,7 @@ class PenmanMonteith(object):
         gbH = gbHw + gbHf
 
         # ... for hypostomatous leaves only gbH should be doubled and the
-        # single-sided value used for gbw
-
+        # single-sided value used for gbv
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
 
@@ -122,7 +121,6 @@ class PenmanMonteith(object):
         return (grn, gh, gbH, gv)
 
     def calc_rnet(self, par, tair, tair_k, tleaf_k, vpd):
-
 
         umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
         par *= umol_m2_s_to_W_m2
@@ -141,7 +139,7 @@ class PenmanMonteith(object):
         # W m-2 = J m-2 s-1
         rnet = self.leaf_absorptance * par - isothermal_net_lw
 
-        return (self.leaf_absorptance * par - isothermal_net_lw)
+        return rnet
 
     def calc_slope_of_saturation_vapour_pressure_curve(self, tair):
         """ Eqn 13 from FAO paper, Allen et al. 1998.
