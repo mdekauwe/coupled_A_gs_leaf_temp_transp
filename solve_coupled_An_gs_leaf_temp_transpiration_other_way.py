@@ -24,7 +24,8 @@ class CoupledModel(object):
     """Iteratively solve leaf temp, ci, gs and An."""
 
     def __init__(self, g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                 deltaSv, Hdv, Hdj, Q10, Ca, iter_max=100):
+                 deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance, gs_model,
+                 iter_max=100):
 
         # set params
         self.g0 = g0
@@ -40,11 +41,11 @@ class CoupledModel(object):
         self.Hdv = Hdv
         self.Hdj = Hdj
         self.Q10 = Q10
-        self.Ca = Ca
         self.leaf_width = leaf_width
 
         # Bit of hack to get around considering seperate sunlit/shaded leaves
         self.leaf_absorptance = leaf_absorptance
+        self.gs_model = gs_model
         self.iter_max = iter_max
 
         # Constants
@@ -54,9 +55,10 @@ class CoupledModel(object):
         self.kpa_2_pa = 1000.
         self.pa_2_kpa = 1.0 / self.kpa_2_pa
 
-    def main(self, tair, par, vpd, wind, pressure):
+    def main(self, tair, par, vpd, wind, pressure, Ca):
 
-        F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=False, model_Q10=True)
+        F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=False, model_Q10=True,
+                       gs_model=self.gs_model)
         S = StomtalConductance(g0=self.g0, g1=self.g1, D0=self.D0)
         L = LeafEnergyBalance(self.leaf_width, self.leaf_absorptance)
 
@@ -66,8 +68,8 @@ class CoupledModel(object):
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 
-        print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
-        print
+        #print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
+        #print
 
 
         iter = 0
@@ -97,7 +99,7 @@ class CoupledModel(object):
 
 
 
-            print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
+            #print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
 
             if math.fabs(Tleaf - new_tleaf) < 0.02:
                 break
@@ -122,10 +124,10 @@ class CoupledModel(object):
                                      Hdj=self.Hdj, vpd=vpd)
         gs = S.leuning(dleaf, An, Cs)
 
-        print
-        print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
+        #print
+        #print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
 
-
+        return (An, gs, et)
 
 
 if __name__ == '__main__':
@@ -165,5 +167,5 @@ if __name__ == '__main__':
     Ca = 400.0
 
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                     deltaSv, Hdv, Hdj, Q10, Ca)
-    C.main(tair, par, vpd, wind, pressure)
+                   deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance)
+    C.main(tair, par, vpd, wind, pressure, Ca)

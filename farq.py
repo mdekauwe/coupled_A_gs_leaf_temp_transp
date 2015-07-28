@@ -13,7 +13,7 @@ __email__ = "mdekauwe@gmail.com"
 import sys
 import numpy as np
 import os
-
+import math
 
 class FarquharC3(object):
     """
@@ -55,7 +55,8 @@ class FarquharC3(object):
                  Eo=36380.0, Eag=37830.0, theta_hyperbol=0.9995,
                  theta_J=0.7, force_vcmax_fit_pts=None,
                  alpha=None, quantum_yield=0.3, absorptance=0.8,
-                 change_over_pt=None, model_Q10=False):
+                 change_over_pt=None, model_Q10=False,
+                 gs_model=None):
         """
         Parameters
         ----------
@@ -118,6 +119,7 @@ class FarquharC3(object):
         self.force_vcmax_fit_pts = force_vcmax_fit_pts
         self.change_over_pt = change_over_pt
         self.model_Q10 = model_Q10
+        self.gs_model = gs_model
 
     def calc_photosynthesis(self, Ci=None, Tleaf=None, Par=None, Jmax=None,
                             Vcmax=None, Jmax25=None, Vcmax25=None, Rd=None,
@@ -203,38 +205,55 @@ class FarquharC3(object):
 
         # actual rate of electron transport, a function of absorbed PAR
         if Par is not None:
-            J = self.quadratic(a=self.theta_J, b=-(self.alpha * Par + Jmax),
+            J, jerror = self.quadratic(a=self.theta_J, b=-(self.alpha * Par + Jmax),
                                c=self.alpha * Par * Jmax)
-        # All measurements are calculated under saturated light!!
+
+
+        #All measurements are calculated under saturated light!!
         else:
             J = Jmax
 
-        gamma = 0.0
-        g0 = 0.01
-        g1 = 9.0
-        D0 = 1.5 # kpa
+        if self.gs_model == "leuning":
+            gamma = 0.0
+            g0 = 0.01
+            g1 = 9.0
+            D0 = 1.5 # kpa
 
-        gsdiva = g1 / (Ci - gamma) / (1.0 + vpd / D0)
+            gsdiva = g1 / (Ci - gamma) / (1.0 + vpd / D0)
+        elif self.gs_model == "medlyn":
+            g0 = 0.0
+            g1 = 2.35
+            gsdiva = g1 / Ci / math.sqrt(vpd)
 
         # Solution when Rubisco activity is limiting
         A = g0 + gsdiva * (Vcmax - Rd)
         B = ((1.0 - Ci * gsdiva) * (Vcmax - Rd) + g0 * (Km - Ci) - gsdiva *
              (Vcmax * gamma_star + Km * Rd))
         C = -(1.0 - Ci * gsdiva) * (Vcmax * gamma_star + Km * Rd) - g0 * Km * Ci
-        Cic = self.quadratic(a=A, b=B, c=C, large=True)
+        Cic, error = self.quadratic(a=A, b=B, c=C, large=True)
 
-        Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
+        if error:
+            Ac = 0.0
+        else:
+            Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
 
-        # Solution when electron transport rate is limiting
-        Vj = J / 4.0
-        A =  g0 + gsdiva * (Vj - Rd)
-        B = ((1. - Ci * gsdiva) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
-             gsdiva * (Vj * gamma_star + 2.* gamma_star * Rd))
-        C = - ((1.0 - Ci * gsdiva) * gamma_star * (Vj + 2.0 * Rd) -
-                g0 * 2. * gamma_star * Ci)
-        Cij = self.quadratic(a=A, b=B, c=C, large=True))
+        if jerror:
+            gs = 0.0
+            Aj = - Rd
+        else:
+            # Solution when electron transport rate is limiting
+            Vj = J / 4.0
+            A =  g0 + gsdiva * (Vj - Rd)
+            B = ((1. - Ci * gsdiva) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
+                 gsdiva * (Vj * gamma_star + 2.* gamma_star * Rd))
+            C = - ((1.0 - Ci * gsdiva) * gamma_star * (Vj + 2.0 * Rd) -
+                    g0 * 2. * gamma_star * Ci)
+            Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
-        Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
+            if error:
+                Aj = 0.0
+            else:
+                Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
 
 
         An = np.minimum(Ac, Aj) - Rd
@@ -437,14 +456,17 @@ class FarquharC3(object):
         val : float
             positive root
         """
-
+        error = False
         d = b**2 - 4.0 * a * c # discriminant
-        # if < 0.0 then an imaginary root was found
-        d = np.where(np.logical_or(d<=0, np.any(np.isnan(d))), -999.9, d)
+        if d < 0.0:
+            # then an imaginary root was found
+            error = True
+            return 0.0, error
+
         root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
         root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
 
         if large:
-            return root2
+            return root2, error
         else:
-            return root1
+            return root1, error

@@ -40,7 +40,7 @@ class LeafEnergyBalance(object):
         self.leaf_width = leaf_width
         self.leaf_absorptance = leaf_absorptance
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
-        
+
     def calc_leaf_temp(self, tleaf=None, tair=None, gs=None, par=None, vpd=None,
                        pressure=None, wind=None, leaf_width=None):
 
@@ -51,8 +51,6 @@ class LeafEnergyBalance(object):
 
         air_density = pressure / (self.Rspecifc_dry_air * tair_k)
         cmolar = pressure  / (self.RGAS * tair_k)
-
-
 
         # W m-2 = J m-2 s-1
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
