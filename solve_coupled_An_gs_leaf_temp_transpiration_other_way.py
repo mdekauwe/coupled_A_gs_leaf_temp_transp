@@ -49,7 +49,6 @@ class CoupledModel(object):
         self.iter_max = iter_max
 
         # Constants
-
         self.GBHGBC = 1.32 # Ratio of Gbh:Gbc
         self.GSVGSC = 1.57 # Ratio of Gsw:Gsc
 
@@ -71,7 +70,7 @@ class CoupledModel(object):
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 
-        print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
+        print "Start: %.3f %.3f %.3f" % (Ci, Tleaf, dleaf)
         print
 
 

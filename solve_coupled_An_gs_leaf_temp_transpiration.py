@@ -24,7 +24,7 @@ from leaf_energy_balance import LeafEnergyBalance
 class CoupledModel(object):
     """Iteratively solve leaf temp, ci, gs and An."""
     def __init__(self, g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                 deltaSv, Hdv, Hdj, Q10, Ca, leaf_width, leaf_absorptance,
+                 deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance,
                  iter_max=100):
 
         # set params
@@ -48,13 +48,13 @@ class CoupledModel(object):
         self.iter_max = iter_max
 
         # Constants
-        # Ratio of Gbh:Gbc
-        self.GBHGBC = 1.32
+        self.GBHGBC = 1.32 # Ratio of Gbh:Gbc
+        self.GSVGSC = 1.57 # Ratio of Gsw:Gsc
         self.deg2kelvin = 273.15
         self.kpa_2_pa = 1000.
         self.pa_2_kpa = 1.0 / self.kpa_2_pa
 
-    def main(self, tair, par, vpd, wind, pressure, ca):
+    def main(self, tair, par, vpd, wind, pressure, Ca):
 
         F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=False, model_Q10=True)
         S = StomtalConductance(g0=self.g0, g1=self.g1, D0=self.D0)
@@ -63,17 +63,18 @@ class CoupledModel(object):
         # set initialise values
         dleaf = vpd
         Cs = Ca
+        Ci = Ca * 0.7
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 
-        print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
+        print "Start: %.3f %.3f %.3f" % (Ci, Tleaf, dleaf)
         print
 
         iter = 0
         while True:
 
             (An, Acn,
-             Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+             Ajn) = F.calc_photosynthesis(Ci=Ci, Tleaf=Tleaf_K, Par=par,
                                           Jmax25=self.Jmax25,
                                           Vcmax25=self.Vcmax25,
                                           Q10=self.Q10, Eaj=self.Eaj,
@@ -82,7 +83,7 @@ class CoupledModel(object):
                                           deltaSv=self.deltaSv,
                                           Rd25=self.Rd25, Hdv=self.Hdv,
                                           Hdj=self.Hdj)
-            gs = S.leuning(dleaf, An, Cs)
+            gs = S.leuning(dleaf, An, Ci)
 
             (new_tleaf, et, gbH, gv) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         dleaf, pressure, wind)
@@ -90,9 +91,10 @@ class CoupledModel(object):
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
+            Ci = Cs - An / (gs / self.GSVGSC)
             dleaf = et * (pressure) / gv * self.pa_2_kpa # kPa
 
-            print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
+            print "%.3f %.3f %.3f %.3f %.3f" %  (Ci, Tleaf, dleaf, An, gs)
 
             if math.fabs(Tleaf - new_tleaf) < 0.02:
                 break
@@ -106,7 +108,7 @@ class CoupledModel(object):
 
         # Now recalculate new An and gs based on resolved vpd, ci, tleaf
         (An, Acn,
-        Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+        Ajn) = F.calc_photosynthesis(Ci=Ci, Tleaf=Tleaf_K, Par=par,
                                      Jmax25=self.Jmax25,
                                      Vcmax25=self.Vcmax25,
                                      Q10=self.Q10, Eaj=self.Eaj,
@@ -115,10 +117,10 @@ class CoupledModel(object):
                                      deltaSv=self.deltaSv,
                                      Rd25=self.Rd25, Hdv=self.Hdv,
                                      Hdj=self.Hdj)
-        gs = S.leuning(dleaf, An, Cs)
+        gs = S.leuning(dleaf, An, Ci)
 
         print
-        print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
+        print "End: %.3f %.3f %.3f %.3f %.3f" % (Ci, Tleaf, dleaf, An, gs)
 
         return (An, gs, et)
 
@@ -158,6 +160,7 @@ if __name__ == '__main__':
     wind = 2.5
     pressure = 101325.0
     Ca = 400.0
+
 
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
                    deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance)
