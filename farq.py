@@ -227,9 +227,10 @@ class FarquharC3(object):
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)
-        B = ((1.0 - Ci * gs_over_a) * (Vcmax - Rd) + g0 * (Km - Ci) - gs_over_a *
-             (Vcmax * gamma_star + Km * Rd))
-        C = -(1.0 - Ci * gs_over_a) * (Vcmax * gamma_star + Km * Rd) - g0 * Km * Ci
+        B = ((1.0 - Ci * gs_over_a) * (Vcmax - Rd) + g0 *
+             (Km - Ci) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
+        C = (-(1.0 - Ci * gs_over_a) * (Vcmax * gamma_star + Km * Rd) -
+              (g0 * Km * Ci))
         Cic, error = self.quadratic(a=A, b=B, c=C, large=True)
 
         if error or Cic <= 0.0 or Cic > Ci:
@@ -247,11 +248,14 @@ class FarquharC3(object):
         A =  g0 + gs_over_a * (Vj - Rd)
         B = ((1. - Ci * gs_over_a) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
              gs_over_a * (Vj * gamma_star + 2.* gamma_star * Rd))
-        C = - ((1.0 - Ci * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
-                g0 * 2. * gamma_star * Ci)
-        Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
+        C = (-(1.0 - Ci * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
+               g0 * 2. * gamma_star * Ci)
 
-
+        # account for Medlyn g0 = 0
+        if A == 0.0:
+            Cij = -C / B
+        else:
+            Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
         Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
         if Aj - Rd < 1E-6:
