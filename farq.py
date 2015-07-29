@@ -239,10 +239,6 @@ class FarquharC3(object):
             Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
 
 
-        #if jerror:
-        #    gs = 0.0
-        #    Aj = - Rd
-        #else:
         # Solution when electron transport rate is limiting
         Vj = J / 4.0
         A =  g0 + gs_over_a * (Vj - Rd)
@@ -251,13 +247,12 @@ class FarquharC3(object):
         C = (-(1.0 - Ci * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
                g0 * 2. * gamma_star * Ci)
 
-        # account for Medlyn g0 = 0
-        if A == 0.0:
-            Cij = -C / B
-        else:
-            Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
+
+        Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
         Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
+
+        # Below light compensation point
         if Aj - Rd < 1E-6:
             Cij = Ci
             Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
@@ -266,8 +261,7 @@ class FarquharC3(object):
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-
-        return An, Acn, Ajn
+        return (An, Acn, Ajn)
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):
         """ Check the user supplied arguments, either they supply the values
@@ -469,10 +463,28 @@ class FarquharC3(object):
             error = True
             return 0.0, error
 
-        root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
-        root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
+        #root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
+        #root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
 
         if large:
+            if a == 0.0:
+                if b == 0.0:
+                    root2 = 0.0
+                    if c != 0.0:
+                        print "Cant solve quadratic"
+                else:
+                    root2 = -c / b
+            else:
+                root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
             return root2, error
         else:
+            if a == 0.0:
+                if b == 0.0:
+                    root1 == 0.0
+                    if c != 0.0:
+                        print "Cant solve quadratic"
+                else:
+                    root1 = -c / b
+            else:
+                root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
             return root1, error
