@@ -80,10 +80,7 @@ class LeafEnergyBalance(object):
 
         Tdiff = (rnet - le_et) / (self.cp * self.air_mass * gh)
         new_Tleaf = tair + Tdiff
-
-        #print new_Tleaf, rnet
-        #sys.exit()
-
+        
 
         return (new_Tleaf, et, gbH, gw)
 

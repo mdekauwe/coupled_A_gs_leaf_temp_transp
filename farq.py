@@ -179,6 +179,7 @@ class FarquharC3(object):
         """
         self.check_supplied_args(Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25)
 
+
         # calculate temp dependancies of Michaelis–Menten constants for CO2, O2
         Km = self.calc_michaelis_menten_constants(Tleaf)
 
@@ -193,15 +194,20 @@ class FarquharC3(object):
         if Vcmax25 is not None:
             # Effect of temperature on Vcmax and Jamx
             if self.peaked_Vcmax:
-                Vcmax = self.peaked_arrh(Vcmax25, Eav, Tleaf, deltaSv, Hdv)
+
+                #Vcmax = self.peaked_arrh(Vcmax25, Eav, Tleaf, deltaSv, Hdv)
+                Vcmax = self.peaked_arrh(Vcmax25, 51560.0000, Tleaf, 0.0, Hdv)
             else:
                 Vcmax = self.arrh(Vcmax25, Eav, Tleaf)
 
+
         if Jmax25 is not None:
             if self.peaked_Jmax:
-                Jmax = self.peaked_arrh(Jmax25, Eaj, Tleaf, deltaSj, Hdj)
+                #Jmax = self.peaked_arrh(Jmax25, Eaj, Tleaf, deltaSj, Hdj)
+                Jmax = self.peaked_arrh(Jmax25, 43790.0000, Tleaf, 644.433777, Hdj)
             else:
                 Jmax = self.arrh(Jmax25, Eaj, Tleaf)
+
 
         # actual rate of electron transport, a function of absorbed PAR
         if Par is not None:
@@ -213,17 +219,19 @@ class FarquharC3(object):
         else:
             J = Jmax
 
+
+
         if self.gs_model == "leuning":
             gamma = 0.0
-            g0 = 0.01
+            g0 = 0.001
             g1 = 9.0
             D0 = 1.5 # kpa
-
             gs_over_a = g1 / (Ci - gamma) / (1.0 + vpd / D0)
         elif self.gs_model == "medlyn":
             g0 = 0.0
             g1 = 2.35
             gs_over_a = g1 / Ci / math.sqrt(vpd)
+
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)
@@ -232,6 +240,7 @@ class FarquharC3(object):
         C = (-(1.0 - Ci * gs_over_a) * (Vcmax * gamma_star + Km * Rd) -
               (g0 * Km * Ci))
         Cic, error = self.quadratic(a=A, b=B, c=C, large=True)
+
 
         if error or Cic <= 0.0 or Cic > Ci:
             Ac = 0.0
@@ -261,7 +270,10 @@ class FarquharC3(object):
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-        return (An, Acn, Ajn)
+        gs = g0 + gs_over_a * An
+
+
+        return (An, Acn, Ajn, gs)
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):
         """ Check the user supplied arguments, either they supply the values

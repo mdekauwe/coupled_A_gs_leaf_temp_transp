@@ -25,7 +25,7 @@ class PenmanMonteith(object):
 
         self.kpa_2_pa = 1000.
         self.sigma = 5.6704E-08  # stefan boltzmann constant, (w m-2 k-4)
-        self.emissivity_leaf = 0.99   # emissivity of leaf (-)
+        self.emissivity_leaf = 0.95   # emissivity of leaf (-)
         self.cp = 1010.0         # specific heat of dry air (j kg-1 k-1)
         self.h2olv0 = 2.501e6    # latent heat H2O (J kg-1)
         self.h2omw = 18E-3       # mol mass H20 (kg mol-1)
@@ -76,6 +76,7 @@ class PenmanMonteith(object):
             # et units = mol m-2 s-1,
             # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
             # to get to kg m2 d-1 or mm d-1
+
             return et / lambda_et, LE_et
 
     def calc_conductances(self, tair_k, tleaf, tair, wind, gs, cmolar):
@@ -114,7 +115,6 @@ class PenmanMonteith(object):
         # single-sided value used for gbv
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
-
         gbw = self.GBWGBH * gbH
         gsw = self.GSVGSC * gs
 

@@ -67,14 +67,14 @@ class CoupledModel(object):
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 
-        print "Start: %.3f %.3f %.3f" % (Ci, Tleaf, dleaf)
+        print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
         print
 
         iter = 0
         while True:
 
             (An, Acn,
-             Ajn) = F.calc_photosynthesis(Ci=Ci, Tleaf=Tleaf_K, Par=par,
+             Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
                                           Jmax25=self.Jmax25,
                                           Vcmax25=self.Vcmax25,
                                           Q10=self.Q10, Eaj=self.Eaj,
@@ -83,10 +83,10 @@ class CoupledModel(object):
                                           deltaSv=self.deltaSv,
                                           Rd25=self.Rd25, Hdv=self.Hdv,
                                           Hdj=self.Hdj)
-            gs = S.leuning(dleaf, An, Ci)
+            gs = S.leuning(dleaf, An, Cs)
 
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
-                                                        dleaf, pressure, wind)
+                                                        vpd, pressure, wind)
 
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
@@ -94,7 +94,7 @@ class CoupledModel(object):
             Ci = Cs - An / (gs / self.GSWGSC)
             dleaf = et * (pressure) / gw * self.pa_2_kpa # kPa
 
-            print "%.3f %.3f %.3f %.3f %.3f" %  (Ci, Tleaf, dleaf, An, gs)
+            print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
 
             if math.fabs(Tleaf - new_tleaf) < 0.02:
                 break
@@ -108,7 +108,7 @@ class CoupledModel(object):
 
         # Now recalculate new An and gs based on resolved vpd, ci, tleaf
         (An, Acn,
-        Ajn) = F.calc_photosynthesis(Ci=Ci, Tleaf=Tleaf_K, Par=par,
+        Ajn) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
                                      Jmax25=self.Jmax25,
                                      Vcmax25=self.Vcmax25,
                                      Q10=self.Q10, Eaj=self.Eaj,
@@ -117,10 +117,10 @@ class CoupledModel(object):
                                      deltaSv=self.deltaSv,
                                      Rd25=self.Rd25, Hdv=self.Hdv,
                                      Hdj=self.Hdj)
-        gs = S.leuning(dleaf, An, Ci)
+        gs = S.leuning(dleaf, An, Cs)
 
         print
-        print "End: %.3f %.3f %.3f %.3f %.3f" % (Ci, Tleaf, dleaf, An, gs)
+        print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
 
         return (An, gs, et)
 
