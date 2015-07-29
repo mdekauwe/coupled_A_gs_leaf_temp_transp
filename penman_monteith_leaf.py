@@ -37,17 +37,17 @@ class PenmanMonteith(object):
         self.leaf_absorptance = leaf_absorptance
         self.leaf_width = leaf_width # (m)
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
-        self.GBVGBH = 1.075 # Ratio of Gbw:Gbh
+        self.GBWGBH = 1.075 # Ratio of Gbw:Gbh
         self.GSVGSC = 1.57 # Ratio of Gsw:Gsc
 
 
-    def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gv,
+    def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gw,
                 rnet):
         """
         Rnet: J m-2 s-1 = W m-2
         VPD needs to be in Pa, see conversion below
-        GH boundary layer conductance to heat, mol m-2 s-1
-        GV conductance to water vapour, mol m-2 s-1
+        gh boundary layer conductance to heat, mol m-2 s-1
+        gw conductance to water vapour, mol m-2 s-1
         Pressure, Pa
 
         """
@@ -61,14 +61,14 @@ class PenmanMonteith(object):
         # psychrometric constant
         gamma = self.cp * self.air_mass * pressure / lambda_et
 
-        if gv <= 0.0:
+        if gw <= 0.0:
             # gs = 0, transpiration = 0
             return 0.0, 0.0
         else:
             # Y cancels in eqn 10
             arg1 = (slope * rnet + (vpd * self.kpa_2_pa) * gh * self.cp *
                     self.air_mass)
-            arg2 = slope + gamma * gh / gv
+            arg2 = slope + gamma * gh / gw
             et = arg1 / arg2
 
             # latent heat loss
@@ -116,13 +116,13 @@ class PenmanMonteith(object):
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
 
-        gbv = self.GBVGBH * gbH
-        gsv = self.GSVGSC * gs
+        gbw = self.GBWGBH * gbH
+        gsw = self.GSVGSC * gs
 
         # total leaf conductance to water vapour (mol m-2 s-1)
-        gv = (gbv * gsv) / (gbv + gsv)
+        gw = (gbw * gsw) / (gbw + gsw)
 
-        return (grn, gh, gbH, gv)
+        return (grn, gh, gbH, gw)
 
     def calc_rnet(self, par, tair, tair_k, tleaf_k, vpd):
 
@@ -186,10 +186,10 @@ class PenmanMonteith(object):
         cmolar = pressure  / (RGAS * tair_k)
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
 
-        (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair,
+        (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                  wind, gs, cmolar)
         (et, lambda_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
-                                    gh, gv, rnet)
+                                    gh, gw, rnet)
         return (et, lambda_et)
 
 if __name__ == '__main__':

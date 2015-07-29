@@ -63,10 +63,10 @@ class LeafEnergyBalance(object):
         #rnet = max(0.0, par * (1.0 - albedo) - net_lw)
 
 
-        (grn, gh, gbH, gv) = P.calc_conductances(tair_k, tleaf, tair,
+        (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                 wind, gs, cmolar)
         (et, le_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
-                                    gh, gv, rnet)
+                                    gh, gw, rnet)
 
         # D6 in Leuning
         Y = 1.0 / (1.0 + grn / gbH)
@@ -85,7 +85,7 @@ class LeafEnergyBalance(object):
         #sys.exit()
 
 
-        return (new_Tleaf, et, gbH, gv)
+        return (new_Tleaf, et, gbH, gw)
 
 
 if __name__ == '__main__':
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
 
     L = LeafEnergyBalance(leaf_width, leaf_absorptance)
-    new_Tleaf, et, gbh, gv = L.calc_leaf_temp(tleaf, tair, gs, par, vpd, pressure,
+    new_Tleaf, et, gbh, gw = L.calc_leaf_temp(tleaf, tair, gs, par, vpd, pressure,
                                     wind, leaf_width)
 
     print new_Tleaf, et, et*18*0.001*86400.
