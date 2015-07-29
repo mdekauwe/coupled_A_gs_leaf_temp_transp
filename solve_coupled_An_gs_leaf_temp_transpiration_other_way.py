@@ -49,8 +49,10 @@ class CoupledModel(object):
         self.iter_max = iter_max
 
         # Constants
-        # Ratio of Gbh:Gbc
-        self.GBHGBC = 1.32
+
+        self.GBHGBC = 1.32 # Ratio of Gbh:Gbc
+        self.GSVGSC = 1.57 # Ratio of Gsw:Gsc
+
         self.deg2kelvin = 273.15
         self.kpa_2_pa = 1000.
         self.pa_2_kpa = 1.0 / self.kpa_2_pa
@@ -87,8 +89,10 @@ class CoupledModel(object):
                                           deltaSv=self.deltaSv,
                                           Rd25=self.Rd25, Hdv=self.Hdv,
                                           Hdj=self.Hdj, vpd=dleaf)
-
-            gs = S.leuning(dleaf, An, Ci)
+            if An < 0.0:
+                gs = self.g0
+            else:
+                gs = S.leuning(dleaf, An, Ci)
 
             (new_tleaf, et, gbH, gv) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         dleaf, pressure, wind)
@@ -96,7 +100,7 @@ class CoupledModel(object):
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
-            Ci = Cs - An / (gs / 1.6)
+            Ci = Cs - An / (gs / self.GSVGSC)
             dleaf = et * (pressure) / gv * self.pa_2_kpa # kPa
 
 

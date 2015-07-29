@@ -232,29 +232,31 @@ class FarquharC3(object):
         C = -(1.0 - Ci * gsdiva) * (Vcmax * gamma_star + Km * Rd) - g0 * Km * Ci
         Cic, error = self.quadratic(a=A, b=B, c=C, large=True)
 
-        if error:
+        if error or Cic <= 0.0 or Cic > Ci:
             Ac = 0.0
         else:
             Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
 
-        if jerror:
-            gs = 0.0
-            Aj = - Rd
-        else:
-            # Solution when electron transport rate is limiting
-            Vj = J / 4.0
-            A =  g0 + gsdiva * (Vj - Rd)
-            B = ((1. - Ci * gsdiva) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
-                 gsdiva * (Vj * gamma_star + 2.* gamma_star * Rd))
-            C = - ((1.0 - Ci * gsdiva) * gamma_star * (Vj + 2.0 * Rd) -
-                    g0 * 2. * gamma_star * Ci)
-            Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
-            if error:
-                Aj = 0.0
-            else:
-                Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
+        #if jerror:
+        #    gs = 0.0
+        #    Aj = - Rd
+        #else:
+        # Solution when electron transport rate is limiting
+        Vj = J / 4.0
+        A =  g0 + gsdiva * (Vj - Rd)
+        B = ((1. - Ci * gsdiva) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
+             gsdiva * (Vj * gamma_star + 2.* gamma_star * Rd))
+        C = - ((1.0 - Ci * gsdiva) * gamma_star * (Vj + 2.0 * Rd) -
+                g0 * 2. * gamma_star * Ci)
+        Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
+
+
+        Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
+        if Aj - Rd < 1E-6:
+            Cij = Ci
+            Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
 
         An = np.minimum(Ac, Aj) - Rd
         Acn = Ac - Rd

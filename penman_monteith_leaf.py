@@ -61,19 +61,23 @@ class PenmanMonteith(object):
         # psychrometric constant
         gamma = self.cp * self.air_mass * pressure / lambda_et
 
-        # Y cancels in eqn 10
-        arg1 = (slope * rnet + (vpd * self.kpa_2_pa) * gh * self.cp *
-                self.air_mass)
-        arg2 = slope + gamma * gh / gv
-        et = arg1 / arg2
+        if gv <= 0.0:
+            # gs = 0, transpiration = 0
+            return 0.0, 0.0
+        else:
+            # Y cancels in eqn 10
+            arg1 = (slope * rnet + (vpd * self.kpa_2_pa) * gh * self.cp *
+                    self.air_mass)
+            arg2 = slope + gamma * gh / gv
+            et = arg1 / arg2
 
-        # latent heat loss
-        LE_et = et
+            # latent heat loss
+            LE_et = et
 
-        # et units = mol m-2 s-1,
-        # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
-        # to get to kg m2 d-1 or mm d-1
-        return et / lambda_et, LE_et
+            # et units = mol m-2 s-1,
+            # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
+            # to get to kg m2 d-1 or mm d-1
+            return et / lambda_et, LE_et
 
     def calc_conductances(self, tair_k, tleaf, tair, wind, gs, cmolar):
         """
