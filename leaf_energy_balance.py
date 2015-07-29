@@ -50,7 +50,7 @@ class LeafEnergyBalance(object):
         tair_k = tair + self.DEG_TO_KELVIN
 
         air_density = pressure / (self.Rspecifc_dry_air * tair_k)
-        cmolar = pressure  / (self.RGAS * tair_k)
+        cmolar = pressure / (self.RGAS * tair_k)
 
         # W m-2 = J m-2 s-1
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
 
     L = LeafEnergyBalance(leaf_width, leaf_absorptance)
-    new_Tleaf, et, gbh, gw = L.calc_leaf_temp(tleaf, tair, gs, par, vpd, pressure,
-                                    wind, leaf_width)
+    new_Tleaf, et, gbh, gw = L.calc_leaf_temp(tleaf, tair, gs, par, vpd,
+                                              pressure, wind, leaf_width)
 
     print new_Tleaf, et, et*18*0.001*86400.

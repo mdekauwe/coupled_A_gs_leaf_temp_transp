@@ -40,7 +40,6 @@ class PenmanMonteith(object):
         self.GBWGBH = 1.075 # Ratio of Gbw:Gbh
         self.GSVGSC = 1.57 # Ratio of Gsw:Gsc
 
-
     def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gw,
                 rnet):
         """

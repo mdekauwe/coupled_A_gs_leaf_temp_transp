@@ -219,17 +219,17 @@ class FarquharC3(object):
             g1 = 9.0
             D0 = 1.5 # kpa
 
-            gsdiva = g1 / (Ci - gamma) / (1.0 + vpd / D0)
+            gs_over_a = g1 / (Ci - gamma) / (1.0 + vpd / D0)
         elif self.gs_model == "medlyn":
             g0 = 0.0
             g1 = 2.35
-            gsdiva = g1 / Ci / math.sqrt(vpd)
+            gs_over_a = g1 / Ci / math.sqrt(vpd)
 
         # Solution when Rubisco activity is limiting
-        A = g0 + gsdiva * (Vcmax - Rd)
-        B = ((1.0 - Ci * gsdiva) * (Vcmax - Rd) + g0 * (Km - Ci) - gsdiva *
+        A = g0 + gs_over_a * (Vcmax - Rd)
+        B = ((1.0 - Ci * gs_over_a) * (Vcmax - Rd) + g0 * (Km - Ci) - gs_over_a *
              (Vcmax * gamma_star + Km * Rd))
-        C = -(1.0 - Ci * gsdiva) * (Vcmax * gamma_star + Km * Rd) - g0 * Km * Ci
+        C = -(1.0 - Ci * gs_over_a) * (Vcmax * gamma_star + Km * Rd) - g0 * Km * Ci
         Cic, error = self.quadratic(a=A, b=B, c=C, large=True)
 
         if error or Cic <= 0.0 or Cic > Ci:
@@ -244,10 +244,10 @@ class FarquharC3(object):
         #else:
         # Solution when electron transport rate is limiting
         Vj = J / 4.0
-        A =  g0 + gsdiva * (Vj - Rd)
-        B = ((1. - Ci * gsdiva) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
-             gsdiva * (Vj * gamma_star + 2.* gamma_star * Rd))
-        C = - ((1.0 - Ci * gsdiva) * gamma_star * (Vj + 2.0 * Rd) -
+        A =  g0 + gs_over_a * (Vj - Rd)
+        B = ((1. - Ci * gs_over_a) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
+             gs_over_a * (Vj * gamma_star + 2.* gamma_star * Rd))
+        C = - ((1.0 - Ci * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
                 g0 * 2. * gamma_star * Ci)
         Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
