@@ -20,6 +20,12 @@ from stomatal_conductance_models import StomtalConductance
 from leaf_energy_balance import LeafEnergyBalance
 from solve_coupled_An_gs_leaf_temp_transpiration import CoupledModel
 
+def get_values(vpd, Ca, tair, par, pressure, C):
+    store = []
+    for ta in tair:
+        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
+        store.append(et*18*0.001*86400.)
+    return store
 
 if __name__ == '__main__':
 
@@ -97,49 +103,30 @@ if __name__ == '__main__':
                      gs_model="leuning")
     vpd = 1.0
     Ca = 400.0
-    leu_amb = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        leu_amb.append(et*18*0.001*86400.)
+    leu_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    leu_ele = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        leu_ele.append(et*18*0.001*86400.)
+    leu_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
     ax1.plot(tair, leu_amb, "r-", label="LEU: Amb=400ppm")
     ax1.plot(tair, leu_ele, "r--", label="LEU: Ele=800ppm")
 
     vpd = 3.0
     Ca = 400.0
-    leu_amb = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        leu_amb.append(et*18*0.001*86400.)
+    leu_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    leu_ele = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        leu_ele.append(et*18*0.001*86400.)
-
+    leu_ele = get_values(vpd, Ca, tair, par, pressure, C)
     ax2.plot(tair, leu_amb, "r-", label="LEU: Amb=400ppm")
     ax2.plot(tair, leu_ele, "r--", label="LEU: Ele=800ppm")
 
 
     vpd = 5.0
     Ca = 400.0
-    leu_amb = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        leu_amb.append(et*18*0.001*86400.)
+    leu_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    leu_ele = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        leu_ele.append(et*18*0.001*86400.)
+    leu_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
     ax3.plot(tair, leu_amb, "r-", label="LEU: Amb=400ppm")
     ax3.plot(tair, leu_ele, "r--", label="LEU: Ele=800ppm")
@@ -154,16 +141,10 @@ if __name__ == '__main__':
 
     Ca = 400.0
     vpd = 1.0
-    med_amb = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        med_amb.append(et*18*0.001*86400.)
+    med_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    med_ele = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        med_ele.append(et*18*0.001*86400.)
+    med_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
     ax1.plot(tair, med_amb, "g-", label="MED: Amb=400ppm")
     ax1.plot(tair, med_ele, "g--", label="MED: Ele=800ppm")
@@ -171,16 +152,10 @@ if __name__ == '__main__':
 
     Ca = 400.0
     vpd = 3.0
-    med_amb = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        med_amb.append(et*18*0.001*86400.)
+    med_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    med_ele = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        med_ele.append(et*18*0.001*86400.)
+    med_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
     ax2.plot(tair, med_amb, "g-", label="MED: Amb=400ppm")
     ax2.plot(tair, med_ele, "g--", label="MED: Ele=800ppm")
@@ -188,16 +163,10 @@ if __name__ == '__main__':
 
     Ca = 400.0
     vpd = 5.0
-    med_amb = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        med_amb.append(et*18*0.001*86400.)
+    med_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    med_ele = []
-    for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        med_ele.append(et*18*0.001*86400.)
+    med_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
     ax3.plot(tair, med_amb, "g-", label="MED: Amb=400ppm")
     ax3.plot(tair, med_ele, "g--", label="MED: Ele=800ppm")
