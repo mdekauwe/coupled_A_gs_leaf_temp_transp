@@ -228,8 +228,8 @@ class FarquharC3(object):
             D0 = 1.5 # kpa
             gs_over_a = g1 / (Ci - gamma) / (1.0 + vpd / D0)
         elif self.gs_model == "medlyn":
-            g0 = 0.0
-            g1 = 2.35
+            g0 = 0.001
+            g1 = 3.35
             gs_over_a = g1 / Ci / math.sqrt(vpd)
 
 

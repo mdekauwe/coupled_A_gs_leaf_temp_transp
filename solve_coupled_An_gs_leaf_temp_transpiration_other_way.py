@@ -89,10 +89,10 @@ class CoupledModel(object):
                                           Rd25=self.Rd25, Hdv=self.Hdv,
                                           Hdj=self.Hdj, vpd=dleaf)
 
-            if An < 0.0:
-                gs = self.g0
-            else:
-                gs = S.leuning(dleaf, An, Cs)
+            #if An < 0.0:
+            #    gs = self.g0
+            #else:
+            #    gs = S.leuning(dleaf, An, Cs)
 
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         vpd, pressure, wind)
@@ -128,7 +128,7 @@ class CoupledModel(object):
                                      deltaSv=self.deltaSv,
                                      Rd25=self.Rd25, Hdv=self.Hdv,
                                      Hdj=self.Hdj, vpd=vpd)
-        gs = S.leuning(dleaf, An, Cs)
+        #gs = S.leuning(dleaf, An, Cs)
 
 
         print
@@ -168,10 +168,10 @@ if __name__ == '__main__':
     # variables though obviously fixed here.
     par = 1500.0
     tair = 20.0
-    vpd = 2.0
+    vpd = 4.0
     wind = 2.5
     pressure = 101325.0
-    Ca = 400.0
+    Ca = 800.0
 
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
                      deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance,
