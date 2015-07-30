@@ -87,6 +87,7 @@ class CoupledModel(object):
                 gs = S.leuning(dleaf, An, Cs)
             elif self.gs_model == "medlyn":
                 gs = S.medlyn(dleaf, An, Cs)
+                print "here", self.g1
 
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         vpd, pressure, wind)
