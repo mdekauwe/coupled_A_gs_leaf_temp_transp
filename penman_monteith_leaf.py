@@ -21,24 +21,26 @@ import sys
 class PenmanMonteith(object):
 
     """docstring for PenmanMonteith"""
-    def __init__(self, leaf_width, leaf_absorptance):
+    def __init__(self, leaf_width, SW_abs, angle=35.0):
 
         self.kpa_2_pa = 1000.
-        self.sigma = 5.6704E-08  # stefan boltzmann constant, (w m-2 k-4)
-        self.emissivity_leaf = 0.95   # emissivity of leaf (-)
-        self.cp = 1010.0         # specific heat of dry air (j kg-1 k-1)
-        self.h2olv0 = 2.501e6    # latent heat H2O (J kg-1)
-        self.h2omw = 18E-3       # mol mass H20 (kg mol-1)
-        self.air_mass = 29.0E-3     # mol mass air (kg mol-1)
-        self.umol_to_j = 4.57    # conversion from J to umol quanta
-        self.dheat = 21.5E-6     # molecular diffusivity for heat (m2 s-1)
+        self.sigma = 5.6704E-08        # Stefan-Boltzmann constant, (w m-2 k-4)
+        self.emissivity_leaf = 0.98    # emissivity of leaf (-)
+        self.cp = 1010.0               # specific heat of dry air (j kg-1 k-1)
+        self.h2olv0 = 2.501e6          # latent heat H2O (J kg-1)
+        self.h2omw = 18E-3             # mol mass H20 (kg mol-1)
+        self.air_mass = 29.0E-3        # mol mass air (kg mol-1)
+        self.umol_to_j = 4.57          # conversion from J to umol quanta
+        self.dheat = 21.5E-6           # molecular diffusivity for heat (m2 s-1)
         self.DEG_TO_KELVIN = 273.15
-        self.RGAS = 8.314        # universal gas constant (mol-1 K-1)
-        self.leaf_absorptance = leaf_absorptance
-        self.leaf_width = leaf_width # (m)
+        self.RGAS = 8.314               # universal gas constant (mol-1 K-1)
+        self.SW_abs = SW_abs            # absorptance to short-wave radiation
+        self.leaf_width = leaf_width    # (m)
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
-        self.GBWGBH = 1.075 # Ratio of Gbw:Gbh
-        self.GSVGSC = 1.57 # Ratio of Gsw:Gsc
+        self.GBWGBH = 1.075             # Ratio of Gbw:Gbh
+        self.GSVGSC = 1.57              # Ratio of Gsw:Gsc
+        self.angle = angle              # angle from horizontal (deg) 0-90
+        self.PAR_2_SW = 2.0 / self.umol_to_j
 
     def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gw,
                 rnet):
@@ -53,8 +55,8 @@ class PenmanMonteith(object):
         # latent heat of water vapour at air temperature (j mol-1)
         lambda_et = (self.h2olv0 - 2.365E3 * tair) * self.h2omw
 
-        # curve relating sat water vapour pressure to temperature (pa K-1)
-        # kelvin conversion in func
+        # slope of sat. water vapour pressure (e_sat) to temperature curve
+        # (pa K-1), note kelvin conversion in func
         slope = (self.calc_esat(tair + 0.1) - self.calc_esat(tair)) / 0.1
 
         # psychrometric constant
@@ -128,8 +130,12 @@ class PenmanMonteith(object):
         Net isothermal radaiation (Rnet, W m-2), i.e. the net radiation that
         would be recieved if leaf and air temperature were the same
         """
-        umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
-        par *= umol_m2_s_to_W_m2
+
+        # Short wave radiation (W m-2)
+        SW_rad = par * self.PAR_2_SW
+
+        # absorbed short-wave radiation
+        SW_abs = self.SW_abs * math.cos(math.radians(self.angle)) * SW_rad
 
         # atmospheric water vapour pressure (Pa)
         ea = max(0.0, self.calc_esat(tair) - (vpd * self.kpa_2_pa))
@@ -137,13 +143,14 @@ class PenmanMonteith(object):
         # eqn D4
         emissivity_atm = 0.642 * (ea / tair_k)**(1.0 / 7.0)
 
-        rlw_down = emissivity_atm * self.sigma * tair_k**4
-        rlw_up = self.emissivity_leaf * self.sigma * tleaf_k**4
-        isothermal_net_lw = rlw_up - rlw_down
+        # incoming long-wave radiation (W m-2)
+        lw_in = emissivity_atm * self.sigma * tair_k**4
 
-        # isothermal net radiation (W m-2)
-        # W m-2 = J m-2 s-1
-        rnet = self.leaf_absorptance * par - isothermal_net_lw
+        # outgoing long-wave radiation (W m-2)
+        lw_out = self.emissivity_leaf * self.sigma * tleaf_k**4
+
+        # isothermal net radiation (W m-2), note W m-2 = J m-2 s-1
+        rnet = SW_abs + lw_in - lw_out
 
         return rnet
 
@@ -204,11 +211,12 @@ if __name__ == '__main__':
     pressure = 101325.0 # Pa
     wind = 2.0
     leaf_width = 0.02
-    leaf_absorptance = 0.5 # leaf absorptance of solar radiation [0,1]
+    SW_abs = 0.5 # absorptance to short_wave rad [0,1], typically 0.4-0.6
     DEG_TO_KELVIN = 273.15
     RGAS = 8.314
+    angle = 35.0 # angle from horizontal
 
-    P = PenmanMonteith(leaf_width, leaf_absorptance)
+    P = PenmanMonteith(leaf_width, SW_abs, angle)
     (et, lambda_et) = P.main(tleaf, tair, gs, vpd, pressure, wind, par)
 
     print et, lambda_et
