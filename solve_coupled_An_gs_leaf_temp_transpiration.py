@@ -67,8 +67,8 @@ class CoupledModel(object):
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 
-        print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
-        print
+        #print "Start: %.3f %.3f %.3f" % (Cs, Tleaf, dleaf)
+        #print
 
         iter = 0
         while True:
@@ -87,7 +87,7 @@ class CoupledModel(object):
                 gs = S.leuning(dleaf, An, Cs)
             elif self.gs_model == "medlyn":
                 gs = S.medlyn(dleaf, An, Cs)
-                print "here", self.g1
+
 
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         vpd, pressure, wind)
@@ -98,7 +98,7 @@ class CoupledModel(object):
             Ci = Cs - An / (gs / self.GSWGSC)
             dleaf = et * (pressure) / gw * self.pa_2_kpa # kPa
 
-            print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
+            #print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
 
             if math.fabs(Tleaf - new_tleaf) < 0.02:
                 break
@@ -123,8 +123,8 @@ class CoupledModel(object):
                                      Hdj=self.Hdj)
         gs = S.leuning(dleaf, An, Cs)
 
-        print
-        print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
+        #print
+        #print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
 
         return (An, gs, et)
 

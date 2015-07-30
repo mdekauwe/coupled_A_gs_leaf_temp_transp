@@ -230,6 +230,8 @@ class FarquharC3(object):
         elif self.gs_model == "medlyn":
             g0 = 0.001
             g1 = 2.35
+            if vpd < 0.05:
+                vpd = 0.05
             gs_over_a = g1 / Ci / math.sqrt(vpd)
 
 
