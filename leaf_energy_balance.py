@@ -78,9 +78,9 @@ class LeafEnergyBalance(object):
         #new_Tleaf = (tair + sensible_heat /
         #             (self.cp * air_density * (gbH / cmolar)))
 
-        Tdiff = (rnet - le_et) / (self.cp * self.air_mass * gh)
-        new_Tleaf = tair + Tdiff
-        
+        delta_T = (rnet - le_et) / (self.cp * self.air_mass * gh)
+        new_Tleaf = tair + delta_T
+
 
         return (new_Tleaf, et, gbH, gw)
 

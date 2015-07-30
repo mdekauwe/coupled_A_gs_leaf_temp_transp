@@ -124,7 +124,10 @@ class PenmanMonteith(object):
         return (grn, gh, gbH, gw)
 
     def calc_rnet(self, par, tair, tair_k, tleaf_k, vpd):
-
+        """
+        Net isothermal radaiation (Rnet, W m-2), i.e. the net radiation that
+        would be recieved if leaf and air temperature were the same
+        """
         umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
         par *= umol_m2_s_to_W_m2
 
