@@ -1,3 +1,4 @@
-Nothing to add at the moment
+Iteratively solve leaf temp, Ci, gs, An and transpiration following Maetra
+looping logic
 
-- not working, not sure if I need to use the An-gs solution in farq.py
+Nothing really to add at the moment
