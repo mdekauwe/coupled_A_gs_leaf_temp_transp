@@ -78,7 +78,6 @@ class PenmanMonteith(object):
             # et units = mol m-2 s-1,
             # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
             # to get to kg m2 d-1 or mm d-1
-
             return et / lambda_et, LE_et
 
     def calc_conductances(self, tair_k, tleaf, tair, wind, gs, cmolar):

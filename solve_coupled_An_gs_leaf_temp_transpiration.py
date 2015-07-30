@@ -24,8 +24,8 @@ from leaf_energy_balance import LeafEnergyBalance
 class CoupledModel(object):
     """Iteratively solve leaf temp, ci, gs and An."""
     def __init__(self, g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                 deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance,
-                 iter_max=100):
+                 deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs,
+                 gs_model=None, iter_max=100):
 
         # set params
         self.g0 = g0
@@ -43,8 +43,7 @@ class CoupledModel(object):
         self.Q10 = Q10
         self.leaf_width = leaf_width
 
-        # Bit of hack to get around considering seperate sunlit/shaded leaves
-        self.leaf_absorptance = leaf_absorptance
+        self.SW_abs = SW_abs
         self.iter_max = iter_max
 
         # Constants
@@ -53,12 +52,13 @@ class CoupledModel(object):
         self.deg2kelvin = 273.15
         self.kpa_2_pa = 1000.
         self.pa_2_kpa = 1.0 / self.kpa_2_pa
+        self.gs_model = gs_model
 
     def main(self, tair, par, vpd, wind, pressure, Ca):
 
         F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=False, model_Q10=True)
         S = StomtalConductance(g0=self.g0, g1=self.g1, D0=self.D0)
-        L = LeafEnergyBalance(self.leaf_width, self.leaf_absorptance)
+        L = LeafEnergyBalance(self.leaf_width, self.SW_abs)
 
         # set initialise values
         dleaf = vpd
@@ -83,7 +83,10 @@ class CoupledModel(object):
                                           deltaSv=self.deltaSv,
                                           Rd25=self.Rd25, Hdv=self.Hdv,
                                           Hdj=self.Hdj)
-            gs = S.leuning(dleaf, An, Cs)
+            if self.gs_model == "leuning":
+                gs = S.leuning(dleaf, An, Cs)
+            elif self.gs_model == "medlyn":
+                gs = S.medlyn(dleaf, An, Cs)
 
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         vpd, pressure, wind)

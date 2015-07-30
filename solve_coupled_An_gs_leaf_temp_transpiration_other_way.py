@@ -24,7 +24,7 @@ class CoupledModel(object):
     """Iteratively solve leaf temp, ci, gs and An."""
 
     def __init__(self, g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                 deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance, gs_model,
+                 deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs, gs_model,
                  iter_max=100):
 
         # set params
@@ -43,8 +43,7 @@ class CoupledModel(object):
         self.Q10 = Q10
         self.leaf_width = leaf_width
 
-        # Bit of hack to get around considering seperate sunlit/shaded leaves
-        self.leaf_absorptance = leaf_absorptance
+        self.SW_abs = SW_abs
         self.gs_model = gs_model
         self.iter_max = iter_max
 
@@ -61,7 +60,7 @@ class CoupledModel(object):
         F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=True, model_Q10=True,
                        gs_model=self.gs_model)
         S = StomtalConductance(g0=self.g0, g1=self.g1, D0=self.D0)
-        L = LeafEnergyBalance(self.leaf_width, self.leaf_absorptance)
+        L = LeafEnergyBalance(self.leaf_width, self.SW_abs)
 
         # set initialise values
         dleaf = vpd
