@@ -65,7 +65,7 @@ class LeafEnergyBalance(object):
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                  wind, gs, cmolar)
-        (et, le_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
+        (et, le_et) = P.calc_et(tleaf, tair, vpd, pressure, wind, par,
                                 gh, gw, rnet)
 
         # D6 in Leuning

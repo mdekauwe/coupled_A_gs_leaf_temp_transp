@@ -41,7 +41,7 @@ class PenmanMonteith(object):
         self.angle = angle              # angle from horizontal (deg) 0-90
         self.PAR_2_SW = 2.0 / self.umol_to_j
 
-    def calc_et(self, tleaf, tair, gs, vpd, pressure, wind, par, gh, gw,
+    def calc_et(self, tleaf, tair, vpd, pressure, wind, par, gh, gw,
                 rnet):
         """
         Rnet: J m-2 s-1 = W m-2
@@ -134,7 +134,7 @@ class PenmanMonteith(object):
 
         # absorbed short-wave radiation
         SW_abs = self.SW_abs * math.cos(math.radians(self.angle)) * SW_rad
-        
+
         # atmospheric water vapour pressure (Pa)
         ea = max(0.0, self.calc_esat(tair) - (vpd * self.kpa_2_pa))
 
@@ -195,7 +195,7 @@ class PenmanMonteith(object):
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                  wind, gs, cmolar)
-        (et, lambda_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
+        (et, lambda_et) = P.calc_et(tleaf, tair, vpd, pressure, wind, par,
                                     gh, gw, rnet)
         return (et, lambda_et)
 

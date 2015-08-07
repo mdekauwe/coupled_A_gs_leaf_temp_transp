@@ -65,7 +65,7 @@ class CoupledModel(object):
         # set initialise values
         dleaf = vpd
         Cs = Ca
-        Ci = 0.7 * Ca
+        #Ci = 0.7 * Ca
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 
@@ -99,8 +99,9 @@ class CoupledModel(object):
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
-            Ci = Cs - An / (gs / self.GSWGSC)
-            
+            #Ci = Cs - An / (gs / self.GSWGSC)
+            #Ci = Cs - An / (gs ) # gs is in CO2 at this point
+
             dleaf = et * (pressure) / gw * self.pa_2_kpa # kPa
 
 
@@ -120,14 +121,14 @@ class CoupledModel(object):
         # Now recalculate new An and gs based on resolved vpd, ci, tleaf
         (An, Acn,
         Ajn, gs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
-                                     Jmax25=self.Jmax25,
-                                     Vcmax25=self.Vcmax25,
-                                     Q10=self.Q10, Eaj=self.Eaj,
-                                     Eav=self.Eav,
-                                     deltaSj=self.deltaSj,
-                                     deltaSv=self.deltaSv,
-                                     Rd25=self.Rd25, Hdv=self.Hdv,
-                                     Hdj=self.Hdj, vpd=vpd)
+                                         Jmax25=self.Jmax25,
+                                         Vcmax25=self.Vcmax25,
+                                         Q10=self.Q10, Eaj=self.Eaj,
+                                         Eav=self.Eav,
+                                         deltaSj=self.deltaSj,
+                                         deltaSv=self.deltaSv,
+                                         Rd25=self.Rd25, Hdv=self.Hdv,
+                                         Hdj=self.Hdj, vpd=vpd)
         #gs = S.leuning(dleaf, An, Cs)
 
 

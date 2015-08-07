@@ -222,23 +222,23 @@ class FarquharC3(object):
 
         if self.gs_model == "leuning":
             gamma = 0.0
-            g0 = 0.001 / self.GSVGSC
+            g0 = 0.01 / self.GSVGSC
             g1 = 9.0
             D0 = 1.5 # kpa
             gs_over_a = g1 / (Ci - gamma) / (1.0 + vpd / D0)
 
             # conductance to CO2
             gs_over_a /= self.GSVGSC
+
         elif self.gs_model == "medlyn":
-            g0 = 0.00000000000001 / self.GSVGSC
+            g0 = 0.000000000000000001 #/ self.GSVGSC # I want zero, but zero messes up the convergence
             g1 = 2.35
             if vpd < 0.05:
                 vpd = 0.05
 
-            # NOTE: 1.6 (from corrigendum to Medlyn et al 2011) is missing here,
+            # 1.6 (from corrigendum to Medlyn et al 2011) is missing here,
             # because we are calculating conductance to CO2!
             gs_over_a = (1.0 + g1 / math.sqrt(vpd)) / Ci
-
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)

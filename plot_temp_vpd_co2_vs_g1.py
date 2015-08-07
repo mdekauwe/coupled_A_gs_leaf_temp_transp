@@ -41,7 +41,7 @@ if __name__ == '__main__':
     plt.rcParams['font.sans-serif'] = "Helvetica"
     plt.rcParams['axes.labelsize'] = 14
     plt.rcParams['font.size'] = 12
-    plt.rcParams['legend.fontsize'] = 12
+    plt.rcParams['legend.fontsize'] = 10
     plt.rcParams['xtick.labelsize'] = 12
     plt.rcParams['ytick.labelsize'] = 12
 
@@ -117,27 +117,27 @@ if __name__ == '__main__':
 
     ax1.plot(tair, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
     ax1.plot(tair, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
-    ax4.plot(tair, an_amb, "r-", label="LEU: %d" % (Ca1))
-    ax4.plot(tair, an_ele, "r--", label="LEU: %d" % (Ca2))
+    ax4.plot(tair, an_amb, "r-")
+    ax4.plot(tair, an_ele, "r--")
 
 
     vpd = 3.0
     et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
     et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
-    ax2.plot(tair, et_amb, "r-", label="LEU: AMB")
-    ax2.plot(tair, et_ele, "r--", label="LEU: ELE")
-    ax5.plot(tair, an_amb, "r-", label="LEU: AMB")
-    ax5.plot(tair, an_ele, "r--", label="LEU: ELE")
+    ax2.plot(tair, et_amb, "r-")
+    ax2.plot(tair, et_ele, "r--")
+    ax5.plot(tair, an_amb, "r-")
+    ax5.plot(tair, an_ele, "r--")
 
     vpd = 5.0
     et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
     et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
-    ax3.plot(tair, et_amb, "r-", label="LEU: AMB")
-    ax3.plot(tair, et_ele, "r--", label="LEU: ELE")
-    ax6.plot(tair, an_amb, "r-", label="LEU: AMB")
-    ax6.plot(tair, an_ele, "r--", label="LEU: ELE")
+    ax3.plot(tair, et_amb, "r-")
+    ax3.plot(tair, et_ele, "r--")
+    ax6.plot(tair, an_amb, "r-")
+    ax6.plot(tair, an_ele, "r--")
 
 
     g0 = 0.01
@@ -154,28 +154,28 @@ if __name__ == '__main__':
 
     ax1.plot(tair, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
     ax1.plot(tair, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
-    ax4.plot(tair, an_amb, "g-", label="MED: AMB")
-    ax4.plot(tair, an_ele, "g--", label="MED: ELE")
+    ax4.plot(tair, an_amb, "g-")
+    ax4.plot(tair, an_ele, "g--")
 
 
     vpd = 3.0
     et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
     et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
-    ax2.plot(tair, et_amb, "g-", label="MED: AMB")
-    ax2.plot(tair, et_ele, "g--", label="MED: ELE")
-    ax5.plot(tair, an_amb, "g-", label="MED: AMB")
-    ax5.plot(tair, an_ele, "g--", label="MED: ELE")
+    ax2.plot(tair, et_amb, "g-")
+    ax2.plot(tair, et_ele, "g--")
+    ax5.plot(tair, an_amb, "g-")
+    ax5.plot(tair, an_ele, "g--")
 
 
     vpd = 5.0
     et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
     et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
-    ax3.plot(tair, et_amb, "g-", label="MED: AMB")
-    ax3.plot(tair, et_ele, "g--", label="MED: ELE")
-    ax6.plot(tair, an_amb, "g-", label="MED: AMB")
-    ax6.plot(tair, an_ele, "g--", label="MED: ELE")
+    ax3.plot(tair, et_amb, "g-")
+    ax3.plot(tair, et_ele, "g--")
+    ax6.plot(tair, an_amb, "g-")
+    ax6.plot(tair, an_ele, "g--")
 
 
     ax5.set_xlabel("Tair ($^{\circ}$C)")
