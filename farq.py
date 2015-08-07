@@ -121,7 +121,7 @@ class FarquharC3(object):
         self.model_Q10 = model_Q10
         self.gs_model = gs_model
         # Ratio of Gsw:Gsc
-        self.GSVGSC = 1.57
+        self.GSWGSC = 1.57
 
     def calc_photosynthesis(self, Ci=None, Tleaf=None, Par=None, Jmax=None,
                             Vcmax=None, Jmax25=None, Vcmax25=None, Rd=None,
@@ -222,16 +222,16 @@ class FarquharC3(object):
 
         if self.gs_model == "leuning":
             gamma = 0.0
-            g0 = 0.01 / self.GSVGSC
+            g0 = 0.01 / self.GSWGSC
             g1 = 9.0
             D0 = 1.5 # kpa
             gs_over_a = g1 / (Ci - gamma) / (1.0 + vpd / D0)
 
             # conductance to CO2
-            gs_over_a /= self.GSVGSC
+            gs_over_a /= self.GSWGSC
 
         elif self.gs_model == "medlyn":
-            g0 = 0.000000000000000001 #/ self.GSVGSC # I want zero, but zero messes up the convergence
+            g0 = 0.000000000000000001 #/ self.GSWGSC # I want zero, but zero messes up the convergence
             g1 = 2.35
             if vpd < 0.05:
                 vpd = 0.05
@@ -276,7 +276,7 @@ class FarquharC3(object):
         Ajn = Aj - Rd
 
         gs = g0 + gs_over_a * An
-        #gs *=  self.GSVGSC  # done in PM
+        #gs *=  self.GSWGSC  # done in PM
 
         return (An, Acn, Ajn, gs)
 

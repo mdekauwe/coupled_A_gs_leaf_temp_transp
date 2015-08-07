@@ -79,14 +79,14 @@ class CoupledModel(object):
 
             (An, Acn,
              Ajn, gs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
-                                          Jmax25=self.Jmax25,
-                                          Vcmax25=self.Vcmax25,
-                                          Q10=self.Q10, Eaj=self.Eaj,
-                                          Eav=self.Eav,
-                                          deltaSj=self.deltaSj,
-                                          deltaSv=self.deltaSv,
-                                          Rd25=self.Rd25, Hdv=self.Hdv,
-                                          Hdj=self.Hdj, vpd=dleaf)
+                                              Jmax25=self.Jmax25,
+                                              Vcmax25=self.Vcmax25,
+                                              Q10=self.Q10, Eaj=self.Eaj,
+                                              Eav=self.Eav,
+                                              deltaSj=self.deltaSj,
+                                              deltaSv=self.deltaSv,
+                                              Rd25=self.Rd25, Hdv=self.Hdv,
+                                              Hdj=self.Hdj, vpd=dleaf)
 
             #if An < 0.0:
             #    gs = self.g0
@@ -102,12 +102,11 @@ class CoupledModel(object):
             #Ci = Cs - An / (gs / self.GSWGSC)
             #Ci = Cs - An / (gs ) # gs is in CO2 at this point
 
-            dleaf = et * (pressure) / gw * self.pa_2_kpa # kPa
-
+            dleaf = et * pressure / gw * self.pa_2_kpa # kPa
 
 
             #print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
-
+            
             if math.fabs(Tleaf - new_tleaf) < 0.02:
                 break
 

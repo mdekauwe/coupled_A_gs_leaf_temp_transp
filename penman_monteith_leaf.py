@@ -37,7 +37,7 @@ class PenmanMonteith(object):
         self.leaf_width = leaf_width    # (m)
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
         self.GBWGBH = 1.075             # Ratio of Gbw:Gbh
-        self.GSVGSC = 1.57              # Ratio of Gsw:Gsc
+        self.GSWGSC = 1.57              # Ratio of Gsw:Gsc
         self.angle = angle              # angle from horizontal (deg) 0-90
         self.PAR_2_SW = 2.0 / self.umol_to_j
 
@@ -116,7 +116,7 @@ class PenmanMonteith(object):
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
         gbw = self.GBWGBH * gbH
-        gsw = self.GSVGSC * gs
+        gsw = self.GSWGSC * gs
 
         # total leaf conductance to water vapour (mol m-2 s-1)
         gw = (gbw * gsw) / (gbw + gsw)
