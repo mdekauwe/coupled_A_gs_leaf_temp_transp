@@ -120,6 +120,8 @@ class FarquharC3(object):
         self.change_over_pt = change_over_pt
         self.model_Q10 = model_Q10
         self.gs_model = gs_model
+        # Ratio of Gsw:Gsc
+        self.GSVGSC = 1.57
 
     def calc_photosynthesis(self, Ci=None, Tleaf=None, Par=None, Jmax=None,
                             Vcmax=None, Jmax25=None, Vcmax25=None, Rd=None,
@@ -220,16 +222,22 @@ class FarquharC3(object):
 
         if self.gs_model == "leuning":
             gamma = 0.0
-            g0 = 0.001
+            g0 = 0.001 / self.GSVGSC
             g1 = 9.0
             D0 = 1.5 # kpa
             gs_over_a = g1 / (Ci - gamma) / (1.0 + vpd / D0)
+
+            # conductance to CO2
+            gs_over_a /= self.GSVGSC
         elif self.gs_model == "medlyn":
-            g0 = 0.001
+            g0 = 0.00000000000001 / self.GSVGSC
             g1 = 2.35
             if vpd < 0.05:
                 vpd = 0.05
-            gs_over_a = g1 / Ci / math.sqrt(vpd)
+
+            # NOTE: 1.6 (from corrigendum to Medlyn et al 2011) is missing here,
+            # because we are calculating conductance to CO2!
+            gs_over_a = (1.0 + g1 / math.sqrt(vpd)) / Ci
 
 
         # Solution when Rubisco activity is limiting
@@ -268,7 +276,7 @@ class FarquharC3(object):
         Ajn = Aj - Rd
 
         gs = g0 + gs_over_a * An
-
+        #gs *=  self.GSVGSC  # done in PM
 
         return (An, Acn, Ajn, gs)
 

@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from farq import FarquharC3
 from stomatal_conductance_models import StomtalConductance
 from leaf_energy_balance import LeafEnergyBalance
-from solve_coupled_An_gs_leaf_temp_transpiration_other_way import CoupledModel
+from solve_coupled_An_gs_leaf_temp_transpiration import CoupledModel
 
 
 def get_values(vpd, Ca, tair, par, pressure, C):
@@ -33,7 +33,7 @@ def get_values(vpd, Ca, tair, par, pressure, C):
 
 if __name__ == '__main__':
 
-    fig = plt.figure(figsize=(14,7))
+    fig = plt.figure(figsize=(12,6))
     fig.subplots_adjust(hspace=0.1)
     fig.subplots_adjust(wspace=0.1)
     plt.rcParams['text.usetex'] = False
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     Q10 = 2.0
 
     # Misc stuff
-    leaf_width = 0.02
+    leaf_width = 0.01
 
     SW_abs = 0.5 # absorptance to short_wave rad [0,1], typically 0.4-0.6
 
@@ -103,29 +103,27 @@ if __name__ == '__main__':
     wind = 2.5
     pressure = 101325.0
 
-    tair = np.linspace(0, 50, 50)
+    Ca1 = 500.
+    Ca2 = 900.
+
+    tair = np.linspace(0, 40, 40)
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
                      deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs,
                      gs_model="leuning")
     vpd = 1.0
-    Ca = 400.0
-    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
-    Ca = 800.0
-    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
-    ax1.plot(tair, et_amb, "r-", label="LEU: AMB")
-    ax1.plot(tair, et_ele, "r--", label="LEU: ELE")
-    ax4.plot(tair, an_amb, "r-", label="LEU: AMB")
-    ax4.plot(tair, an_ele, "r--", label="LEU: ELE")
+    ax1.plot(tair, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
+    ax4.plot(tair, an_amb, "r-", label="LEU: %d" % (Ca1))
+    ax4.plot(tair, an_ele, "r--", label="LEU: %d" % (Ca2))
 
 
     vpd = 3.0
-    Ca = 400.0
-    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
-
-    Ca = 800.0
-    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
     ax2.plot(tair, et_amb, "r-", label="LEU: AMB")
     ax2.plot(tair, et_ele, "r--", label="LEU: ELE")
@@ -133,11 +131,8 @@ if __name__ == '__main__':
     ax5.plot(tair, an_ele, "r--", label="LEU: ELE")
 
     vpd = 5.0
-    Ca = 400.0
-    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
-
-    Ca = 800.0
-    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
     ax3.plot(tair, et_amb, "r-", label="LEU: AMB")
     ax3.plot(tair, et_ele, "r--", label="LEU: ELE")
@@ -154,24 +149,18 @@ if __name__ == '__main__':
 
 
     vpd = 1.0
-    Ca = 400.0
-    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
-    Ca = 800.0
-    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
-
-    ax1.plot(tair, et_amb, "g-", label="MED: AMB")
-    ax1.plot(tair, et_ele, "g--", label="MED: ELE")
+    ax1.plot(tair, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
     ax4.plot(tair, an_amb, "g-", label="MED: AMB")
     ax4.plot(tair, an_ele, "g--", label="MED: ELE")
 
 
     vpd = 3.0
-    Ca = 400.0
-    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
-
-    Ca = 800.0
-    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
     ax2.plot(tair, et_amb, "g-", label="MED: AMB")
     ax2.plot(tair, et_ele, "g--", label="MED: ELE")
@@ -180,11 +169,8 @@ if __name__ == '__main__':
 
 
     vpd = 5.0
-    Ca = 400.0
-    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
-
-    Ca = 800.0
-    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
 
     ax3.plot(tair, et_amb, "g-", label="MED: AMB")
     ax3.plot(tair, et_ele, "g--", label="MED: ELE")
@@ -222,6 +208,6 @@ if __name__ == '__main__':
     ax2.set_title("VPD = 3.0 (kPa)")
     ax3.set_title("VPD = 5.0 (kPa)")
 
-    fig.savefig("/Users/mdekauwe/Desktop/VPD_vs_g1.pdf", bbox_inches='tight',
+    fig.savefig("/Users/mdekauwe/Desktop/temp_co2_vs_g1.pdf", bbox_inches='tight',
                 pad_inches=0.1)
     plt.show()
