@@ -17,7 +17,6 @@ import os
 import math
 
 from farq import FarquharC3
-from stomatal_conductance_models import StomtalConductance
 from leaf_energy_balance import LeafEnergyBalance
 
 class CoupledModel(object):
@@ -59,7 +58,6 @@ class CoupledModel(object):
 
         F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=True, model_Q10=True,
                        gs_model=self.gs_model)
-        S = StomtalConductance(g0=self.g0, g1=self.g1, D0=self.D0)
         L = LeafEnergyBalance(self.leaf_width, self.SW_abs)
 
         # set initialise values
@@ -106,7 +104,7 @@ class CoupledModel(object):
 
 
             #print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
-            
+
             if math.fabs(Tleaf - new_tleaf) < 0.02:
                 break
 

@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 
 
 from farq import FarquharC3
-from stomatal_conductance_models import StomtalConductance
 from leaf_energy_balance import LeafEnergyBalance
 from solve_coupled_An_gs_leaf_temp_transpiration import CoupledModel
 
