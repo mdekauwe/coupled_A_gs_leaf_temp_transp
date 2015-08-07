@@ -23,15 +23,17 @@ from solve_coupled_An_gs_leaf_temp_transpiration_other_way import CoupledModel
 
 
 def get_values(vpd, Ca, tair, par, pressure, C):
-    store = []
+    et_store = []
+    An_store = []
     for ta in tair:
         (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        store.append(et*18*0.001*86400.)
-    return store
+        et_store.append(et*18*0.001*86400.)
+        An_store.append(An*12.*0.000001*86400.)
+    return et_store, An_store
 
 if __name__ == '__main__':
 
-    fig = plt.figure(figsize=(14,4))
+    fig = plt.figure(figsize=(14,7))
     fig.subplots_adjust(hspace=0.1)
     fig.subplots_adjust(wspace=0.1)
     plt.rcParams['text.usetex'] = False
@@ -62,9 +64,12 @@ if __name__ == '__main__':
     colour_list = ["#CC79A7", "#E69F00", "#0072B2", "#009E73", "#F0E442",
                    "#56B4E9", "#D55E00", "#000000"]
 
-    ax1 = fig.add_subplot(131)
-    ax2 = fig.add_subplot(132)
-    ax3 = fig.add_subplot(133)
+    ax1 = fig.add_subplot(231)
+    ax2 = fig.add_subplot(232)
+    ax3 = fig.add_subplot(233)
+    ax4 = fig.add_subplot(234)
+    ax5 = fig.add_subplot(235)
+    ax6 = fig.add_subplot(236)
 
 
     # Parameters
@@ -104,35 +109,40 @@ if __name__ == '__main__':
                      gs_model="leuning")
     vpd = 1.0
     Ca = 400.0
-    leu_amb = get_values(vpd, Ca, tair, par, pressure, C)
-
+    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    leu_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
-    ax1.plot(tair, leu_amb, "r-", label="LEU: Amb=400ppm")
-    ax1.plot(tair, leu_ele, "r--", label="LEU: Ele=800ppm")
+    ax1.plot(tair, et_amb, "r-", label="LEU: AMB")
+    ax1.plot(tair, et_ele, "r--", label="LEU: ELE")
+    ax4.plot(tair, an_amb, "r-", label="LEU: AMB")
+    ax4.plot(tair, an_ele, "r--", label="LEU: ELE")
+
 
     vpd = 3.0
     Ca = 400.0
-    leu_amb = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    leu_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
-    ax2.plot(tair, leu_amb, "r-", label="LEU: Amb=400ppm")
-    ax2.plot(tair, leu_ele, "r--", label="LEU: Ele=800ppm")
-
+    ax2.plot(tair, et_amb, "r-", label="LEU: AMB")
+    ax2.plot(tair, et_ele, "r--", label="LEU: ELE")
+    ax5.plot(tair, an_amb, "r-", label="LEU: AMB")
+    ax5.plot(tair, an_ele, "r--", label="LEU: ELE")
 
     vpd = 5.0
     Ca = 400.0
-    leu_amb = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    leu_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
-    ax3.plot(tair, leu_amb, "r-", label="LEU: Amb=400ppm")
-    ax3.plot(tair, leu_ele, "r--", label="LEU: Ele=800ppm")
+    ax3.plot(tair, et_amb, "r-", label="LEU: AMB")
+    ax3.plot(tair, et_ele, "r--", label="LEU: ELE")
+    ax6.plot(tair, an_amb, "r-", label="LEU: AMB")
+    ax6.plot(tair, an_ele, "r--", label="LEU: ELE")
 
 
     g0 = 0.01
@@ -142,52 +152,71 @@ if __name__ == '__main__':
                      deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs,
                      gs_model="medlyn")
 
-    Ca = 400.0
+
     vpd = 1.0
-    med_amb = get_values(vpd, Ca, tair, par, pressure, C)
+    Ca = 400.0
+    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    med_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
-    ax1.plot(tair, med_amb, "g-", label="MED: Amb=400ppm")
-    ax1.plot(tair, med_ele, "g--", label="MED: Ele=800ppm")
+    ax1.plot(tair, et_amb, "g-", label="MED: AMB")
+    ax1.plot(tair, et_ele, "g--", label="MED: ELE")
+    ax4.plot(tair, an_amb, "g-", label="MED: AMB")
+    ax4.plot(tair, an_ele, "g--", label="MED: ELE")
 
 
-    Ca = 400.0
     vpd = 3.0
-    med_amb = get_values(vpd, Ca, tair, par, pressure, C)
-
-    Ca = 800.0
-    med_ele = get_values(vpd, Ca, tair, par, pressure, C)
-
-    ax2.plot(tair, med_amb, "g-", label="MED: Amb=400ppm")
-    ax2.plot(tair, med_ele, "g--", label="MED: Ele=800ppm")
-
-
     Ca = 400.0
-    vpd = 5.0
-    med_amb = get_values(vpd, Ca, tair, par, pressure, C)
+    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
 
     Ca = 800.0
-    med_ele = get_values(vpd, Ca, tair, par, pressure, C)
+    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
 
-    ax3.plot(tair, med_amb, "g-", label="MED: Amb=400ppm")
-    ax3.plot(tair, med_ele, "g--", label="MED: Ele=800ppm")
+    ax2.plot(tair, et_amb, "g-", label="MED: AMB")
+    ax2.plot(tair, et_ele, "g--", label="MED: ELE")
+    ax5.plot(tair, an_amb, "g-", label="MED: AMB")
+    ax5.plot(tair, an_ele, "g--", label="MED: ELE")
 
 
-    ax2.set_xlabel("Tair ($^{\circ}$C)")
+    vpd = 5.0
+    Ca = 400.0
+    et_amb, an_amb = get_values(vpd, Ca, tair, par, pressure, C)
+
+    Ca = 800.0
+    et_ele, an_ele = get_values(vpd, Ca, tair, par, pressure, C)
+
+    ax3.plot(tair, et_amb, "g-", label="MED: AMB")
+    ax3.plot(tair, et_ele, "g--", label="MED: ELE")
+    ax6.plot(tair, an_amb, "g-", label="MED: AMB")
+    ax6.plot(tair, an_ele, "g--", label="MED: ELE")
+
+
+    ax5.set_xlabel("Tair ($^{\circ}$C)")
     ax1.set_ylabel("Transpiration (mm d$^{-1}$)")
+    ax4.set_ylabel("Photosynthesis (g C m$^{-2}$ d$^{-1}$)")
     ax1.legend(numpoints=1, loc="best", frameon=False)
+
     ax1.set_ylim(0,4)
     ax2.set_ylim(0,4)
     ax3.set_ylim(0,4)
+    ax4.set_ylim(0,12)
+    ax5.set_ylim(0,12)
+    ax6.set_ylim(0,12)
 
     ax1.locator_params(nbins=6)
     ax2.locator_params(nbins=6)
     ax3.locator_params(nbins=6)
 
+
+    plt.setp(ax1.get_xticklabels(), visible=False)
+    plt.setp(ax2.get_xticklabels(), visible=False)
+    plt.setp(ax3.get_xticklabels(), visible=False)
+
     plt.setp(ax2.get_yticklabels(), visible=False)
     plt.setp(ax3.get_yticklabels(), visible=False)
+    plt.setp(ax5.get_yticklabels(), visible=False)
+    plt.setp(ax6.get_yticklabels(), visible=False)
 
     ax1.set_title("VPD = 1.0 (kPa)")
     ax2.set_title("VPD = 3.0 (kPa)")

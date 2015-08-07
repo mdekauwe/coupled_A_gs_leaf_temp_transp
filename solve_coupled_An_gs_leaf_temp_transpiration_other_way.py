@@ -100,6 +100,7 @@ class CoupledModel(object):
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
             Ci = Cs - An / (gs / self.GSWGSC)
+            
             dleaf = et * (pressure) / gw * self.pa_2_kpa # kPa
 
 
@@ -166,8 +167,8 @@ if __name__ == '__main__':
 
     # variables though obviously fixed here.
     par = 1500.0
-    tair = 20.0
-    vpd = 4.0
+    tair = 25.0
+    vpd = 1.0
     wind = 2.5
     pressure = 101325.0
     Ca = 800.0

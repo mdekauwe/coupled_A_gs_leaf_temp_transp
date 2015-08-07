@@ -27,14 +27,14 @@ class LeafEnergyBalance(object):
     def __init__(self, leaf_width, leaf_absorptance):
 
         # constants
-        self.sigma = 5.6704E-08  # stefan boltzmann constant, (w m-2 k-4)
+        self.sigma = 5.6704E-08       # stefan boltzmann constant, (w m-2 k-4)
         self.emissivity_leaf = 0.99   # emissivity of leaf (-)
-        self.cp = 1010.0         # specific heat of dry air (j kg-1 k-1)
-        self.h2olv0 = 2.501e6    # latent heat H2O (J kg-1)
-        self.h2omw = 18E-3       # mol mass H20 (kg mol-1)
-        self.air_mass = 29.0E-3     # mol mass air (kg mol-1)
-        self.umol_to_j = 4.57    # conversion from J to umol quanta
-        self.dheat = 21.5E-6     # molecular diffusivity for heat
+        self.cp = 1010.0              # specific heat of dry air (j kg-1 k-1)
+        self.h2olv0 = 2.501E6         # latent heat H2O (J kg-1)
+        self.h2omw = 18E-3            # mol mass H20 (kg mol-1)
+        self.air_mass = 29.0E-3       # mol mass air (kg mol-1)
+        self.umol_to_j = 4.57         # conversion from J to umol quanta
+        self.dheat = 21.5E-6          # molecular diffusivity for heat
         self.DEG_TO_KELVIN = 273.15
         self.RGAS = 8.314
         self.leaf_width = leaf_width
@@ -64,9 +64,9 @@ class LeafEnergyBalance(object):
 
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
-                                                wind, gs, cmolar)
+                                                 wind, gs, cmolar)
         (et, le_et) = P.calc_et(tleaf, tair, gs, vpd, pressure, wind, par,
-                                    gh, gw, rnet)
+                                gh, gw, rnet)
 
         # D6 in Leuning
         Y = 1.0 / (1.0 + grn / gbH)
@@ -80,7 +80,6 @@ class LeafEnergyBalance(object):
 
         delta_T = (rnet - le_et) / (self.cp * self.air_mass * gh)
         new_Tleaf = tair + delta_T
-
 
         return (new_Tleaf, et, gbH, gw)
 

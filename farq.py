@@ -179,7 +179,6 @@ class FarquharC3(object):
         """
         self.check_supplied_args(Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25)
 
-
         # calculate temp dependancies of Michaelis–Menten constants for CO2, O2
         Km = self.calc_michaelis_menten_constants(Tleaf)
 
@@ -194,25 +193,23 @@ class FarquharC3(object):
         if Vcmax25 is not None:
             # Effect of temperature on Vcmax and Jamx
             if self.peaked_Vcmax:
-
-                #Vcmax = self.peaked_arrh(Vcmax25, Eav, Tleaf, deltaSv, Hdv)
-                Vcmax = self.peaked_arrh(Vcmax25, 51560.0000, Tleaf, 0.0, Hdv)
+                Vcmax = self.peaked_arrh(Vcmax25, Eav, Tleaf, deltaSv, Hdv)
             else:
                 Vcmax = self.arrh(Vcmax25, Eav, Tleaf)
 
 
         if Jmax25 is not None:
             if self.peaked_Jmax:
-                #Jmax = self.peaked_arrh(Jmax25, Eaj, Tleaf, deltaSj, Hdj)
-                Jmax = self.peaked_arrh(Jmax25, 43790.0000, Tleaf, 644.433777, Hdj)
+                Jmax = self.peaked_arrh(Jmax25, Eaj, Tleaf, deltaSj, Hdj)
             else:
                 Jmax = self.arrh(Jmax25, Eaj, Tleaf)
 
 
         # actual rate of electron transport, a function of absorbed PAR
         if Par is not None:
-            J, jerror = self.quadratic(a=self.theta_J, b=-(self.alpha * Par + Jmax),
-                               c=self.alpha * Par * Jmax)
+            J, jerror = self.quadratic(a=self.theta_J,
+                                       b=-(self.alpha * Par + Jmax),
+                                       c=self.alpha * Par * Jmax)
 
 
         #All measurements are calculated under saturated light!!
@@ -257,8 +254,6 @@ class FarquharC3(object):
              gs_over_a * (Vj * gamma_star + 2.* gamma_star * Rd))
         C = (-(1.0 - Ci * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
                g0 * 2. * gamma_star * Ci)
-
-
         Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
         Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)

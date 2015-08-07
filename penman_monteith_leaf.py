@@ -20,12 +20,11 @@ import sys
 
 class PenmanMonteith(object):
 
-    """docstring for PenmanMonteith"""
     def __init__(self, leaf_width, SW_abs, angle=35.0):
 
         self.kpa_2_pa = 1000.
         self.sigma = 5.6704E-08        # Stefan-Boltzmann constant, (w m-2 k-4)
-        self.emissivity_leaf = 0.98    # emissivity of leaf (-)
+        self.emissivity_leaf = 0.99    # emissivity of leaf (-)
         self.cp = 1010.0               # specific heat of dry air (j kg-1 k-1)
         self.h2olv0 = 2.501e6          # latent heat H2O (J kg-1)
         self.h2omw = 18E-3             # mol mass H20 (kg mol-1)
@@ -135,7 +134,7 @@ class PenmanMonteith(object):
 
         # absorbed short-wave radiation
         SW_abs = self.SW_abs * math.cos(math.radians(self.angle)) * SW_rad
-
+        
         # atmospheric water vapour pressure (Pa)
         ea = max(0.0, self.calc_esat(tair) - (vpd * self.kpa_2_pa))
 
