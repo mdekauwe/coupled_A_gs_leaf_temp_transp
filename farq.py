@@ -498,7 +498,7 @@ class FarquharC3(object):
                 else:
                     root2 = -c / b
             else:
-                root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
+                root2 = (-b + np.sqrt(d)) / (2.0 * a)
             return root2, error
         else:
             if a == 0.0:
@@ -509,5 +509,5 @@ class FarquharC3(object):
                 else:
                     root1 = -c / b
             else:
-                root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
+                root1 = (-b - np.sqrt(d)) / (2.0 * a)
             return root1, error

@@ -108,9 +108,9 @@ if __name__ == '__main__':
     pressure = 101325.0
 
     Ca1 = 500.
-    Ca2 = 800.
+    Ca2 = 900.
 
-    tair = np.linspace(0, 40, 40)
+    tair = np.linspace(0, 40, 50)
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
                      deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs,
                      gs_model="leuning")

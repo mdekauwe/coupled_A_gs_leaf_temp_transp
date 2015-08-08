@@ -63,7 +63,6 @@ class CoupledModel(object):
         # set initialise values
         dleaf = vpd
         Cs = Ca
-
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 

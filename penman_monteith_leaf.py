@@ -128,7 +128,7 @@ class PenmanMonteith(object):
         Net isothermal radaiation (Rnet, W m-2), i.e. the net radiation that
         would be recieved if leaf and air temperature were the same
         """
-
+        
         # Short wave radiation (W m-2)
         SW_rad = par * self.PAR_2_SW
 
