@@ -229,9 +229,13 @@ class FarquharC3(object):
 
             # conductance to CO2
             gs_over_a /= self.GSWGSC
+            ci_over_ca = 1.0 - 1.6 * (1.0 + vpd / D0) / g1
+
 
         elif self.gs_model == "medlyn":
-            g0 = 0.000000000000000001 #/ self.GSWGSC # I want zero, but zero messes up the convergence
+            # I want zero, but zero messes up the convergence, numerical
+            # fix
+            g0 = 1E-09
             g1 = 2.35
             if vpd < 0.05:
                 vpd = 0.05
@@ -239,6 +243,8 @@ class FarquharC3(object):
             # 1.6 (from corrigendum to Medlyn et al 2011) is missing here,
             # because we are calculating conductance to CO2!
             gs_over_a = (1.0 + g1 / math.sqrt(vpd)) / Ci
+            ci_over_ca = g1 / (g1 + math.sqrt(vpd))
+
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)
@@ -264,18 +270,18 @@ class FarquharC3(object):
                g0 * 2. * gamma_star * Ci)
         Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
 
-        Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
+        Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
 
         # Below light compensation point
         if Aj - Rd < 1E-6:
             Cij = Ci
-            Aj = self.assim(Cij, gamma_star, a1=J/4.0, a2=2.0*gamma_star)
+            Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
 
         An = np.minimum(Ac, Aj) - Rd
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-        gs = g0 + gs_over_a * An
+        gs = max(g0, g0 + gs_over_a * An)
         #gs *=  self.GSWGSC  # done in PM
 
         return (An, Acn, Ajn, gs)

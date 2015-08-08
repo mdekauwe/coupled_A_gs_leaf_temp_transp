@@ -131,7 +131,7 @@ class CoupledModel(object):
 
         #print
         #print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
-
+        print dleaf, Cs
         return (An, gs, et)
 
 

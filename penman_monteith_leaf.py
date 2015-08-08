@@ -117,7 +117,7 @@ class PenmanMonteith(object):
         gh = 2.0 * (gbH + grn)
         gbw = self.GBWGBH * gbH
         gsw = self.GSWGSC * gs
-
+        
         # total leaf conductance to water vapour (mol m-2 s-1)
         gw = (gbw * gsw) / (gbw + gsw)
 
