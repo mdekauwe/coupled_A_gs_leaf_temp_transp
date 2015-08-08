@@ -123,7 +123,7 @@ class FarquharC3(object):
         # Ratio of Gsw:Gsc
         self.GSWGSC = 1.57
 
-    def calc_photosynthesis(self, Ci=None, Tleaf=None, Par=None, Jmax=None,
+    def calc_photosynthesis(self, Cs=None, Tleaf=None, Par=None, Jmax=None,
                             Vcmax=None, Jmax25=None, Vcmax25=None, Rd=None,
                             Rd25=None, Q10=None, Eaj=None, Eav=None,
                             deltaSj=None, deltaSv=None, Hdv=200000.0,
@@ -131,8 +131,8 @@ class FarquharC3(object):
         """
         Parameters
         ----------
-        Ci : float
-            intercellular CO2 concentration [umol mol-1]
+        Cs : float
+            leaf surface CO2 concentration [umol mol-1]
         Tleaf : float
             leaf temp [deg K]
 
@@ -223,7 +223,7 @@ class FarquharC3(object):
             g0 = 0.01 / self.GSWGSC
             g1 = 9.0
             D0 = 1.5 # kpa
-            gs_over_a = g1 / (Ci - gamma) / (1.0 + vpd / D0)
+            gs_over_a = g1 / (Cs - gamma) / (1.0 + vpd / D0)
 
             # conductance to CO2
             gs_over_a /= self.GSWGSC
@@ -240,20 +240,22 @@ class FarquharC3(object):
 
             # 1.6 (from corrigendum to Medlyn et al 2011) is missing here,
             # because we are calculating conductance to CO2!
-            gs_over_a = (1.0 + g1 / math.sqrt(vpd)) / Ci
+            gs_over_a = (1.0 + g1 / math.sqrt(vpd)) / Cs
             ci_over_ca = g1 / (g1 + math.sqrt(vpd))
 
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)
-        B = ((1.0 - Ci * gs_over_a) * (Vcmax - Rd) + g0 *
-             (Km - Ci) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
-        C = (-(1.0 - Ci * gs_over_a) * (Vcmax * gamma_star + Km * Rd) -
-              (g0 * Km * Ci))
+        B = ((1.0 - Cs * gs_over_a) * (Vcmax - Rd) + g0 *
+             (Km - Cs) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
+        C = (-(1.0 - Cs * gs_over_a) * (Vcmax * gamma_star + Km * Rd) -
+              (g0 * Km * Cs))
+
+        # intercellular CO2 concentration
         Cic = self.quadratic(a=A, b=B, c=C, large=True)
 
 
-        if Cic <= 0.0 or Cic > Ci:
+        if Cic <= 0.0 or Cic > Cs:
             Ac = 0.0
         else:
             Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
@@ -262,16 +264,18 @@ class FarquharC3(object):
         # Solution when electron transport rate is limiting
         Vj = J / 4.0
         A =  g0 + gs_over_a * (Vj - Rd)
-        B = ((1. - Ci * gs_over_a) * (Vj - Rd) + g0 * (2. * gamma_star - Ci) -
+        B = ((1. - Cs * gs_over_a) * (Vj - Rd) + g0 * (2. * gamma_star - Cs) -
              gs_over_a * (Vj * gamma_star + 2.* gamma_star * Rd))
-        C = (-(1.0 - Ci * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
-               g0 * 2. * gamma_star * Ci)
+        C = (-(1.0 - Cs * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
+               g0 * 2. * gamma_star * Cs)
+
+        # intercellular CO2 concentration
         Cij = self.quadratic(a=A, b=B, c=C, large=True)
 
         Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
         # Below light compensation point?
         if Aj - Rd < 1E-6:
-            Cij = Ci
+            Cij = Cs
             Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
 
         print Cij/400., Cic/400., ci_over_ca

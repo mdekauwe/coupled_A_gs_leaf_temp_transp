@@ -75,7 +75,7 @@ class CoupledModel(object):
 
 
             (An, Acn,
-             Ajn, gs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
+             Ajn, gs) = F.calc_photosynthesis(Cs=Cs, Tleaf=Tleaf_K, Par=par,
                                               Jmax25=self.Jmax25,
                                               Vcmax25=self.Vcmax25,
                                               Q10=self.Q10, Eaj=self.Eaj,
