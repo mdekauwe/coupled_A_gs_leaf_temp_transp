@@ -111,7 +111,7 @@ class CoupledModel(object):
 
             iter += 1
 
-        
+
         return (An, gs, et)
 
 
