@@ -63,7 +63,7 @@ class CoupledModel(object):
         # set initialise values
         dleaf = vpd
         Cs = Ca
-        #Ci = 0.7 * Ca
+
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
 
@@ -86,10 +86,7 @@ class CoupledModel(object):
                                               Rd25=self.Rd25, Hdv=self.Hdv,
                                               Hdj=self.Hdj, vpd=dleaf)
 
-            #if An < 0.0:
-            #    gs = self.g0
-            #else:
-            #    gs = S.leuning(dleaf, An, Cs)
+
 
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         vpd, pressure, wind)
@@ -97,8 +94,6 @@ class CoupledModel(object):
             # update Cs and VPD
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
-            #Ci = Cs - An / (gs / self.GSWGSC)
-            #Ci = Cs - An / (gs ) # gs is in CO2 at this point
 
             dleaf = et * pressure / gw * self.pa_2_kpa # kPa
 
@@ -126,9 +121,7 @@ class CoupledModel(object):
                                          deltaSv=self.deltaSv,
                                          Rd25=self.Rd25, Hdv=self.Hdv,
                                          Hdj=self.Hdj, vpd=vpd)
-        #gs = S.leuning(dleaf, An, Cs)
-
-
+        
         #print
         #print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
         print dleaf, Cs
