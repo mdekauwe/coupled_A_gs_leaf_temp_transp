@@ -87,44 +87,31 @@ class CoupledModel(object):
                                               Hdj=self.Hdj, vpd=dleaf)
 
 
-
+            # Calculate new Tleaf, dleaf, Cs
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         vpd, pressure, wind)
 
-            # update Cs and VPD
             gbc = gbH / self.GBHGBC
             Cs = Ca - An / gbc
-
             dleaf = et * pressure / gw * self.pa_2_kpa # kPa
 
 
             #print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
 
+            # Check for convergence...?
             if math.fabs(Tleaf - new_tleaf) < 0.02:
                 break
 
             if iter > self.iter_max:
                 raise Exception('No convergence: %d' % (iter))
 
+            # Update temperature & do another iteration
             Tleaf = new_tleaf
             Tleaf_K = Tleaf + self.deg2kelvin
+
             iter += 1
 
-        # Now recalculate new An and gs based on resolved vpd, ci, tleaf
-        (An, Acn,
-        Ajn, gs) = F.calc_photosynthesis(Ci=Cs, Tleaf=Tleaf_K, Par=par,
-                                         Jmax25=self.Jmax25,
-                                         Vcmax25=self.Vcmax25,
-                                         Q10=self.Q10, Eaj=self.Eaj,
-                                         Eav=self.Eav,
-                                         deltaSj=self.deltaSj,
-                                         deltaSv=self.deltaSv,
-                                         Rd25=self.Rd25, Hdv=self.Hdv,
-                                         Hdj=self.Hdj, vpd=vpd)
         
-        #print
-        #print "End: %.3f %.3f %.3f %.3f %.3f" % (Cs, Tleaf, dleaf, An, gs)
-        print dleaf, Cs
         return (An, gs, et)
 
 
