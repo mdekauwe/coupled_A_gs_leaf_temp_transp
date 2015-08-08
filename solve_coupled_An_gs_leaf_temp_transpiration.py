@@ -148,7 +148,7 @@ if __name__ == '__main__':
     vpd = 1.0
     wind = 2.5
     pressure = 101325.0
-    Ca = 800.0
+    Ca = 400.0
 
     C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
                      deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance,

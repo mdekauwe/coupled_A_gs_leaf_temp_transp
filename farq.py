@@ -274,6 +274,8 @@ class FarquharC3(object):
             Cij = Ci
             Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
 
+        print Cij/400., Cic/400., ci_over_ca
+
         #arg = ((Ac + Aj - \
         #        np.sqrt((Ac + Aj)**2 - 4.0 * self.theta_hyperbol * Ac * Aj)) /
         #        (2.0 * self.theta_hyperbol))
