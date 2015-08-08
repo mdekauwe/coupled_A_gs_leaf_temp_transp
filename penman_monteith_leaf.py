@@ -74,7 +74,7 @@ class PenmanMonteith(object):
             # latent heat loss
             LE_et = et
 
-            # et units = mol m-2 s-1,
+            # et units = mol H20 m-2 s-1,
             # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
             # to get to kg m2 d-1 or mm d-1
             return et / lambda_et, LE_et
@@ -117,7 +117,7 @@ class PenmanMonteith(object):
         gh = 2.0 * (gbH + grn)
         gbw = self.GBWGBH * gbH
         gsw = self.GSWGSC * gs
-        
+
         # total leaf conductance to water vapour (mol m-2 s-1)
         gw = (gbw * gsw) / (gbw + gsw)
 
