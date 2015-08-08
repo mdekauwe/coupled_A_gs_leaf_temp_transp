@@ -209,7 +209,7 @@ class FarquharC3(object):
 
         # actual rate of electron transport, a function of absorbed PAR
         if Par is not None:
-            J, jerror = self.quadratic(a=self.theta_J,
+            J = self.quadratic(a=self.theta_J,
                                        b=-(self.alpha * Par + Jmax),
                                        c=self.alpha * Par * Jmax)
 
@@ -252,10 +252,10 @@ class FarquharC3(object):
              (Km - Ci) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
         C = (-(1.0 - Ci * gs_over_a) * (Vcmax * gamma_star + Km * Rd) -
               (g0 * Km * Ci))
-        Cic, error = self.quadratic(a=A, b=B, c=C, large=True)
+        Cic = self.quadratic(a=A, b=B, c=C, large=True)
 
 
-        if error or Cic <= 0.0 or Cic > Ci:
+        if Cic <= 0.0 or Cic > Ci:
             Ac = 0.0
         else:
             Ac = self.assim(Cic, gamma_star, a1=Vcmax, a2=Km)
@@ -268,7 +268,7 @@ class FarquharC3(object):
              gs_over_a * (Vj * gamma_star + 2.* gamma_star * Rd))
         C = (-(1.0 - Ci * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
                g0 * 2. * gamma_star * Ci)
-        Cij, error = self.quadratic(a=A, b=B, c=C, large=True)
+        Cij = self.quadratic(a=A, b=B, c=C, large=True)
 
         Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
 
@@ -479,35 +479,30 @@ class FarquharC3(object):
         val : float
             positive root
         """
-        error = False
         d = b**2 - 4.0 * a * c # discriminant
         if d < 0.0:
             # then an imaginary root was found
-            error = True
-            return 0.0, error
-
+            raise ValueError('imaginary root found')
         #root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
         #root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
 
         if large:
-            if a == 0.0:
-                if b == 0.0:
-                    root2 = 0.0
-                    if c != 0.0:
-                        print "Cant solve quadratic"
-                else:
-                    root2 = -c / b
+            if a == 0.0 and b > 0.0:
+                root = -c / b
+            elif a == 0.0 and b == 0.0:
+                root = 0.0
+                if c != 0.0:
+                    raise ValueError('Cant solve quadratic')
             else:
-                root2 = (-b + np.sqrt(d)) / (2.0 * a)
-            return root2, error
+                root = (-b + np.sqrt(d)) / (2.0 * a)
         else:
-            if a == 0.0:
-                if b == 0.0:
-                    root1 == 0.0
-                    if c != 0.0:
-                        print "Cant solve quadratic"
-                else:
-                    root1 = -c / b
+            if a == 0.0 and b > 0.0:
+                root = -c / b
+            elif a == 0.0 and b == 0.0:
+                root == 0.0
+                if c != 0.0:
+                    raise ValueError('Cant solve quadratic')
             else:
-                root1 = (-b - np.sqrt(d)) / (2.0 * a)
-            return root1, error
+                root = (-b - np.sqrt(d)) / (2.0 * a)
+
+        return root
