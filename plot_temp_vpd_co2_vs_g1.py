@@ -147,7 +147,7 @@ if __name__ == '__main__':
     ax9.plot(tair, gs_amb, "r-")
     ax9.plot(tair, gs_ele, "r--")
 
-    
+
 
     g0 = 0.01
     g1 = 2.35
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     ax8.set_xlabel("Tair ($^{\circ}$C)")
     ax1.set_ylabel("$E$ (mm d$^{-1}$)")
     ax4.set_ylabel("$A_{\mathrm{n}}$ (g C m$^{-2}$ d$^{-1}$)")
-    ax7.set_ylabel("$g_{\mathrm{s}}$ (mmol m$^{-2}$ s$^{-1}$)")
+    ax7.set_ylabel("$g_{\mathrm{s}}$ (mol m$^{-2}$ s$^{-1}$)")
     ax1.legend(numpoints=1, loc="best", frameon=False)
 
     ax1.set_ylim(0,4)
