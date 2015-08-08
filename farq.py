@@ -211,14 +211,12 @@ class FarquharC3(object):
         if Par is not None:
             J = self.quadratic(a=self.theta_J,
                                        b=-(self.alpha * Par + Jmax),
-                                       c=self.alpha * Par * Jmax)
+                                       c=self.alpha * Par * Jmax,
+                                       large=False)
 
-
-        #All measurements are calculated under saturated light!!
+        # all measurements are calculated under saturated light!!
         else:
             J = Jmax
-
-
 
         if self.gs_model == "leuning":
             gamma = 0.0
@@ -271,11 +269,21 @@ class FarquharC3(object):
         Cij = self.quadratic(a=A, b=B, c=C, large=True)
 
         Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
-
-        # Below light compensation point
+        # Below light compensation point?
         if Aj - Rd < 1E-6:
             Cij = Ci
             Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
+
+        #arg = ((Ac + Aj - \
+        #        np.sqrt((Ac + Aj)**2 - 4.0 * self.theta_hyperbol * Ac * Aj)) /
+        #        (2.0 * self.theta_hyperbol))
+        ## By default we assume a everything under Ci<150 is Ac limited
+        #A = np.where(Ci < 150.0, Ac, arg)
+
+        # net assimilation rates.
+        #An = A - Rd
+        #Acn = Ac - Rd
+        #Ajn = Aj - Rd
 
         An = np.minimum(Ac, Aj) - Rd
         Acn = Ac - Rd
@@ -481,7 +489,6 @@ class FarquharC3(object):
         """
         d = b**2 - 4.0 * a * c # discriminant
         if d < 0.0:
-            # then an imaginary root was found
             raise ValueError('imaginary root found')
         #root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
         #root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
