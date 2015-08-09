@@ -47,8 +47,8 @@ class CoupledModel(object):
         self.iter_max = iter_max
 
         # Constants
-        self.GBHGBC = 1.32 # Ratio of Gbh:Gbc
-        self.GSWGSC = 1.57 # Ratio of Gsw:Gsc
+        self.GBC_2_GBH = 1.32
+        self.GBH_2_GBC = 1.0 / self.GBC_2_GBH
 
         self.deg2kelvin = 273.15
         self.kpa_2_pa = 1000.
@@ -72,8 +72,6 @@ class CoupledModel(object):
 
         iter = 0
         while True:
-
-
             (An, Acn,
              Ajn, gs) = F.calc_photosynthesis(Cs=Cs, Tleaf=Tleaf_K, Par=par,
                                               Jmax25=self.Jmax25,
@@ -90,12 +88,13 @@ class CoupledModel(object):
             (new_tleaf, et, gbH, gw) = L.calc_leaf_temp(Tleaf, tair, gs, par,
                                                         vpd, pressure, wind)
 
-            gbc = gbH / self.GBHGBC
-            Cs = Ca - An / gbc
-            dleaf = et * pressure / gw * self.pa_2_kpa # kPa
+
+            gbc = gbH * self.GBH_2_GBC
+            Cs = Ca - An / gbc # boundary layer of leaf
+            dleaf = (et * pressure / gw) * self.pa_2_kpa # kPa
 
 
-            #print "%.3f %.3f %.3f %.3f %.3f" %  (Cs, Tleaf, dleaf, An, gs)
+            print "%f %f %f %f %f %f" %  (Cs, Tleaf, dleaf, An*12.*0.000001*86400., gs, et*18*0.001*86400.)
 
             # Check for convergence...?
             if math.fabs(Tleaf - new_tleaf) < 0.02:

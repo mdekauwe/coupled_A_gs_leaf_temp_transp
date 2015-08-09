@@ -50,6 +50,8 @@ class LeafEnergyBalance(object):
         tair_k = tair + self.DEG_TO_KELVIN
 
         air_density = pressure / (self.Rspecifc_dry_air * tair_k)
+
+        # convert from mm s-1 to mol m-2 s-1
         cmolar = pressure / (self.RGAS * tair_k)
 
         # W m-2 = J m-2 s-1
@@ -75,14 +77,14 @@ class LeafEnergyBalance(object):
         sensible_heat = Y * (rnet - le_et)
 
         # leaf-air temperature difference recalculated from energy balance.
-        #new_Tleaf = (tair + sensible_heat /
-        #             (self.cp * air_density * (gbH / cmolar)))
-
+        #delta_T = sensible_heat / (self.cp * air_density * (gh / cmolar))
         delta_T = (rnet - le_et) / (self.cp * self.air_mass * gh)
-        new_Tleaf = tair + delta_T 
+
+
+        new_Tleaf = tair + delta_T
 
         return (new_Tleaf, et, gbH, gw)
-
+        
 
 if __name__ == '__main__':
 

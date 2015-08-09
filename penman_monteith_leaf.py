@@ -36,8 +36,11 @@ class PenmanMonteith(object):
         self.SW_abs = SW_abs            # absorptance to short-wave radiation
         self.leaf_width = leaf_width    # (m)
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
-        self.GBWGBH = 1.075             # Ratio of Gbw:Gbh
-        self.GSWGSC = 1.57              # Ratio of Gsw:Gsc
+
+
+        self.GSC_2_GSW = 1.57
+        self.GSW_2_GSC = 1.0 / self.GSC_2_GSW
+
         self.angle = angle              # angle from horizontal (deg) 0-90
         self.PAR_2_SW = 2.0 / self.umol_to_j
 
@@ -115,8 +118,8 @@ class PenmanMonteith(object):
         # single-sided value used for gbv
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
-        gbw = self.GBWGBH * gbH
-        gsw = self.GSWGSC * gs
+        gbw = gbH * self.GSC_2_GSW
+        gsw = gs * self.GSC_2_GSW
 
         # total leaf conductance to water vapour (mol m-2 s-1)
         gw = (gbw * gsw) / (gbw + gsw)
@@ -128,7 +131,7 @@ class PenmanMonteith(object):
         Net isothermal radaiation (Rnet, W m-2), i.e. the net radiation that
         would be recieved if leaf and air temperature were the same
         """
-        
+
         # Short wave radiation (W m-2)
         SW_rad = par * self.PAR_2_SW
 

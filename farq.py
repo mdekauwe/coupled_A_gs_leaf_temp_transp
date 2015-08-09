@@ -120,8 +120,10 @@ class FarquharC3(object):
         self.change_over_pt = change_over_pt
         self.model_Q10 = model_Q10
         self.gs_model = gs_model
-        # Ratio of Gsw:Gsc
-        self.GSWGSC = 1.57
+
+        self.GSC_2_GSW = 1.57
+        self.GSW_2_GSC = 1.0 / self.GSC_2_GSW
+
 
     def calc_photosynthesis(self, Cs=None, Tleaf=None, Par=None, Jmax=None,
                             Vcmax=None, Jmax25=None, Vcmax25=None, Rd=None,
@@ -206,13 +208,12 @@ class FarquharC3(object):
             else:
                 Jmax = self.arrh(Jmax25, Eaj, Tleaf)
 
-
         # actual rate of electron transport, a function of absorbed PAR
         if Par is not None:
             J = self.quadratic(a=self.theta_J,
-                                       b=-(self.alpha * Par + Jmax),
-                                       c=self.alpha * Par * Jmax,
-                                       large=False)
+                               b=-(self.alpha * Par + Jmax),
+                               c=self.alpha * Par * Jmax,
+                               large=False)
 
         # all measurements are calculated under saturated light!!
         else:
@@ -220,13 +221,13 @@ class FarquharC3(object):
 
         if self.gs_model == "leuning":
             gamma = 0.0
-            g0 = 0.01 / self.GSWGSC
+            g0 = 0.01 * self.GSW_2_GSC
             g1 = 9.0
             D0 = 1.5 # kpa
             gs_over_a = g1 / (Cs - gamma) / (1.0 + vpd / D0)
 
             # conductance to CO2
-            gs_over_a /= self.GSWGSC
+            gs_over_a *= self.GSW_2_GSC
             ci_over_ca = 1.0 - 1.6 * (1.0 + vpd / D0) / g1
 
 
@@ -278,7 +279,7 @@ class FarquharC3(object):
             Cij = Cs
             Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
 
-        print Cij/400., Cic/400., ci_over_ca
+        #print Cij/400., Cic/400., ci_over_ca
 
         #arg = ((Ac + Aj - \
         #        np.sqrt((Ac + Aj)**2 - 4.0 * self.theta_hyperbol * Ac * Aj)) /
@@ -296,7 +297,7 @@ class FarquharC3(object):
         Ajn = Aj - Rd
 
         gs = max(g0, g0 + gs_over_a * An)
-        #gs *=  self.GSWGSC  # done in PM
+        
 
         return (An, Acn, Ajn, gs)
 
