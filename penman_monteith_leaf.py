@@ -47,12 +47,36 @@ class PenmanMonteith(object):
     def calc_et(self, tleaf, tair, vpd, pressure, wind, par, gh, gw,
                 rnet):
         """
-        Rnet: J m-2 s-1 = W m-2
-        VPD needs to be in Pa, see conversion below
-        gh boundary layer conductance to heat, mol m-2 s-1
-        gw conductance to water vapour, mol m-2 s-1
-        Pressure, Pa
+        Calculate transpiration following Penman-Monteith at the leaf level
 
+        Parameters:
+        ----------
+        tair : float
+            air temperature (deg C)
+        tleaf : float
+            leaf temperature (deg C)
+        vpd : float
+            Vapour pressure deficit (kPa, needs to be in Pa, see conversion
+            below)
+        pressure : float
+            air pressure (using constant) (Pa)
+        wind : float
+            wind speed (m s-1)
+        par : float
+            Photosynthetically active radiation (umol m-2 s-1)
+        gh : float
+            boundary layer conductance to heat (mol m-2 s-1)
+        gw :float
+            conductance to water vapour (mol m-2 s-1)
+        rnet : float
+            Net radiation (J m-2 s-1 = W m-2)
+
+        Returns:
+        --------
+        et : float
+            transpiration (mol H2O m-2 s-1)
+        lambda_et : float
+            transpiration (W m-2)
         """
         # latent heat of water vapour at air temperature (j mol-1)
         lambda_et = (self.h2olv0 - 2.365E3 * tair) * self.h2omw
@@ -92,8 +116,34 @@ class PenmanMonteith(object):
         are low, for without this mechanism computed leaf temperatures become
         excessively high.
 
-        Leuning 1995, appendix E
-        Medlyn et al. 2007 appendix, for need for cmolar
+        Parameters:
+        ----------
+        tair_k : float
+            air temperature (K)
+        tleaf : float
+            leaf temperature (deg C)
+        wind : float
+            wind speed (m s-1)
+        gs : float
+            stomtal conductance (mol m-2 s-1)
+        cmolar : float
+            Conversion from m s-1 to mol m-2 s-1
+
+        Returns:
+        --------
+        grn : float
+            radiation conductance (mol m-2 s-1)
+        gh : float
+            total leaf conductance to heat (mol m-2 s-1), *note* two sided.
+        gbH : float
+            total boundary layer conductance to heat for one side of the leaf
+        gw : float
+            total leaf conductance to water vapour (mol m-2 s-1)
+
+        References
+        ----------
+        * Leuning 1995, appendix E
+        * Medlyn et al. 2007 appendix, for need for cmolar
         """
 
         # radiation conductance (mol m-2 s-1)
@@ -130,6 +180,26 @@ class PenmanMonteith(object):
         """
         Net isothermal radaiation (Rnet, W m-2), i.e. the net radiation that
         would be recieved if leaf and air temperature were the same
+
+        Parameters:
+        ----------
+        par : float
+            Photosynthetically active radiation (umol m-2 s-1)
+        tair : float
+            air temperature (deg C)
+        tair_k : float
+            air temperature (K)
+        tleaf_k : float
+            leaf temperature (K)
+        vpd : float
+            Vapour pressure deficit (kPa, needs to be in Pa, see conversion
+            below)
+
+        Returns:
+        --------
+        rnet : float
+            Net radiation (J m-2 s-1 = W m-2)
+
         """
 
         # Short wave radiation (W m-2)
@@ -158,6 +228,11 @@ class PenmanMonteith(object):
     def calc_slope_of_saturation_vapour_pressure_curve(self, tair):
         """ Eqn 13 from FAO paper, Allen et al. 1998.
 
+        Parameters:
+        ----------
+        tair : float
+            air temperature (deg C)
+
         Returns:
         --------
         slope : float
@@ -169,17 +244,28 @@ class PenmanMonteith(object):
         arg2 = t**2
         return (arg1 / arg2) * self.kpa_2_pa
 
-    def calc_esat(self, temp):
+    def calc_esat(self, tair):
         """
-        Saturation vapor pressure (Pa K-1)
+        Saturation vapor pressure
 
         Values of saturation vapour pressure from the Tetens formula are
         within 1 Pa of the exact values.
 
         Taken from Stull 2000 Meteorology for Scientist and Engineers, but see
         also Jones 1992 p 110 (note error in a - wrong units)
+
+        Parameters:
+        ----------
+        tair : float
+            air temperature (deg C)
+
+        Returns:
+        --------
+        esat : float
+            Saturation vapor pressure (Pa K-1)
+
         """
-        Tk = temp + self.DEG_TO_KELVIN
+        Tk = tair + self.DEG_TO_KELVIN
         e0 = 0.611 * self.kpa_2_pa
         b = 17.2694
         T1 = 273.16 # kelvin
