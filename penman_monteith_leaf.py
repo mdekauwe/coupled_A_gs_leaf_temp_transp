@@ -125,7 +125,7 @@ class PenmanMonteith(object):
         wind : float
             wind speed (m s-1)
         gs : float
-            stomtal conductance (mol m-2 s-1)
+            stomatal conductance (mol m-2 s-1)
         cmolar : float
             Conversion from m s-1 to mol m-2 s-1
 
