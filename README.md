@@ -1,4 +1,4 @@
-# Solve coupled Ci, gs, E, An and Tleaf.
+# Solve coupled C<sub>i</sub>, g<sub>s</sub>, E, A<sub>n</sub> and T<sub>leaf</sub>.
 
 ## Overview ##
 Iteratively solve the intercellular CO<sub>2</sub> concentration (Ci), stomatal conductance (gs), transpiration (E), net leaf assimilation (An) and leaf temperature (Tleaf).
