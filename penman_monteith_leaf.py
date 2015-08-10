@@ -280,6 +280,10 @@ class PenmanMonteith(object):
         esat : float
             Saturation vapor pressure (Pa K-1)
 
+        References:
+        Buck, A. (1981) New equations for computing vapor pressure and
+        enhancement factor. Journal of Applied Meteorology, 20, 1527-1532
+
         """
         #Tk = tair + self.DEG_TO_KELVIN
         #e0 = 0.611 * self.kpa_2_pa
@@ -289,11 +293,11 @@ class PenmanMonteith(object):
 
         #return e0 * math.exp(b * (Tk - T1) / (Tk - T2))
 
-        alpha = 611.21
-        beta = 17.502
-        gamma = 240.97
+        a = 611.21
+        b = 17.502
+        c = 240.97
         f = 1.0007 + 3.46 * 10E-8 * pressure
-        esat = f * alpha * (math.exp(beta * tair / (gamma + tair)))
+        esat = f * a * (math.exp(b * tair / (c + tair)))
 
         return esat
 
