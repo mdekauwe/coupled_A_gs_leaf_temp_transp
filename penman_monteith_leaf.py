@@ -87,7 +87,8 @@ class PenmanMonteith(object):
 
         # slope of sat. water vapour pressure (e_sat) to temperature curve
         # (pa K-1), note kelvin conversion in func
-        slope = (self.calc_esat(tair + 0.1) - self.calc_esat(tair)) / 0.1
+        slope = ((self.calc_esat(tair + 0.1, pressure) -
+                  self.calc_esat(tair, pressure)) / 0.1)
 
         # psychrometric constant
         gamma = self.cp * self.air_mass * pressure / lambda_et
@@ -109,7 +110,6 @@ class PenmanMonteith(object):
             # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
             # to get to kg m2 d-1 or mm d-1
 
-            print et / lambda_et*18*0.001*86400.,tleaf, tair, vpd, pressure, wind, par, gh, gw, rnet
             return (et / lambda_et, LE_et)
 
     def calc_conductances(self, tair_k, tleaf, tair, wind, gs, cmolar):
@@ -182,7 +182,7 @@ class PenmanMonteith(object):
 
         return (grn, gh, gbH, gw)
 
-    def calc_rnet(self, par, tair, tair_k, tleaf_k, vpd):
+    def calc_rnet(self, par, tair, tair_k, tleaf_k, vpd, pressure):
         """
         Net isothermal radaiation (Rnet, W m-2), i.e. the net radiation that
         would be recieved if leaf and air temperature were the same.
@@ -204,6 +204,8 @@ class PenmanMonteith(object):
         vpd : float
             Vapour pressure deficit (kPa, needs to be in Pa, see conversion
             below)
+        pressure : float
+            air pressure (using constant) (Pa)
 
         Returns:
         --------
@@ -219,7 +221,7 @@ class PenmanMonteith(object):
         SW_abs = self.SW_abs * math.cos(math.radians(self.angle)) * SW_rad
 
         # atmospheric water vapour pressure (Pa)
-        ea = max(0.0, self.calc_esat(tair) - (vpd * self.kpa_2_pa))
+        ea = max(0.0, self.calc_esat(tair, pressure) - (vpd * self.kpa_2_pa))
 
         # eqn D4
         emissivity_atm = 0.642 * (ea / tair_k)**(1.0 / 7.0)
@@ -232,6 +234,8 @@ class PenmanMonteith(object):
 
         # isothermal net radiation (W m-2), note W m-2 = J m-2 s-1
         rnet = SW_abs + lw_in - lw_out
+
+        print rnet, ea, emissivity_atm, lw_in, lw_out
 
         return rnet
 
@@ -254,7 +258,7 @@ class PenmanMonteith(object):
         arg2 = t**2
         return (arg1 / arg2) * self.kpa_2_pa
 
-    def calc_esat(self, tair):
+    def calc_esat(self, tair, pressure):
         """
         Saturation vapor pressure
 
@@ -268,6 +272,8 @@ class PenmanMonteith(object):
         ----------
         tair : float
             air temperature (deg C)
+        pressure : float
+            air pressure (using constant) (Pa)
 
         Returns:
         --------
@@ -275,13 +281,23 @@ class PenmanMonteith(object):
             Saturation vapor pressure (Pa K-1)
 
         """
-        Tk = tair + self.DEG_TO_KELVIN
-        e0 = 0.611 * self.kpa_2_pa
-        b = 17.2694
-        T1 = 273.16 # kelvin
-        T2 = 35.86  # kelvin
+        #Tk = tair + self.DEG_TO_KELVIN
+        #e0 = 0.611 * self.kpa_2_pa
+        #b = 17.2694
+        #T1 = 273.16 # kelvin
+        #T2 = 35.86  # kelvin
 
-        return e0 * math.exp(b * (Tk - T1) / (Tk - T2))
+        #return e0 * math.exp(b * (Tk - T1) / (Tk - T2))
+
+        alpha = 611.21
+        beta = 17.502
+        gamma = 240.97
+        f = 1.0007 + 3.46 * 10E-8 * pressure
+        esat = f * alpha * (math.exp(beta * tair / (gamma + tair)))
+
+        return esat
+
+
 
     def main(self, tleaf, tair, gs, vpd, pressure, wind, par):
 
@@ -290,7 +306,7 @@ class PenmanMonteith(object):
 
         air_density = pressure  / (self.Rspecifc_dry_air * tair_k)
         cmolar = pressure  / (RGAS * tair_k)
-        rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
+        rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd, pressure)
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                  wind, gs, cmolar)

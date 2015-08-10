@@ -201,7 +201,7 @@ class CoupledModel(object):
         cmolar = pressure / (self.RGAS * tair_k)
 
         # W m-2 = J m-2 s-1
-        rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
+        rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd, pressure)
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                  wind, gs, cmolar)
