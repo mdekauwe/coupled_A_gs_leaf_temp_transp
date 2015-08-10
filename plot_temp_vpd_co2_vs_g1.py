@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 
 
 from farq import FarquharC3
-from leaf_energy_balance import LeafEnergyBalance
 from solve_coupled_An_gs_leaf_temp_transpiration import CoupledModel
 
 
@@ -78,10 +77,7 @@ if __name__ == '__main__':
 
     # Parameters
 
-    # gs stuff
-    g0 = 0.01
-    g1 = 9.0
-    D0 = 1.5 # kpa
+
 
     # A stuff
     Vcmax25 = 30.0
@@ -110,13 +106,29 @@ if __name__ == '__main__':
     Ca1 = 500.
     Ca2 = 900.
 
+    g0 = 0.01
+    g1 = 9.0
+    D0 = 1.5
+    gamma = 0.0
+    CL = CoupledModel(g0, g1, D0, gamma, Vcmax25, Jmax25, Rd25,
+                     Eaj, Eav,deltaSj, deltaSv, Hdv, Hdj, Q10, leaf_width,
+                     SW_abs, gs_model="leuning")
+
+    g0 = 0.0
+    g1 = 2.35
+    CM = CoupledModel(g0, g1, D0, gamma, Vcmax25, Jmax25, Rd25,
+                     Eaj, Eav,deltaSj, deltaSv, Hdv, Hdj, Q10, leaf_width,
+                     SW_abs, gs_model="medlyn")
+
     tair = np.linspace(0, 40, 50)
-    C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                     deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs,
-                     gs_model="leuning")
+
+    #
+    ## LEUNING
+    #
+
     vpd = 1.0
-    (gs_amb, et_amb, an_amb) = get_values(vpd, Ca1, tair, par, pressure, C)
-    (gs_ele, et_ele, an_ele) = get_values(vpd, Ca2, tair, par, pressure, C)
+    (gs_amb, et_amb, an_amb) = get_values(vpd, Ca1, tair, par, pressure, CL)
+    (gs_ele, et_ele, an_ele) = get_values(vpd, Ca2, tair, par, pressure, CL)
 
     ax1.plot(tair, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
     ax1.plot(tair, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
@@ -126,8 +138,8 @@ if __name__ == '__main__':
     ax7.plot(tair, gs_ele, "r--")
 
     vpd = 3.0
-    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
-    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
+    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, CL)
+    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, CL)
 
     ax2.plot(tair, et_amb, "r-")
     ax2.plot(tair, et_ele, "r--")
@@ -137,8 +149,8 @@ if __name__ == '__main__':
     ax8.plot(tair, gs_ele, "r--")
 
     vpd = 5.0
-    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
-    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
+    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, CL)
+    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, CL)
 
     ax3.plot(tair, et_amb, "r-")
     ax3.plot(tair, et_ele, "r--")
@@ -147,19 +159,14 @@ if __name__ == '__main__':
     ax9.plot(tair, gs_amb, "r-")
     ax9.plot(tair, gs_ele, "r--")
 
-
-
-    g0 = 0.01
-    g1 = 2.35
-    D0 = -999.9 # kpa
-    C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                     deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs,
-                     gs_model="medlyn")
+    #
+    ## MEDLYN
+    #
 
 
     vpd = 1.0
-    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
-    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
+    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, CM)
+    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, CM)
 
     ax1.plot(tair, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
     ax1.plot(tair, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
@@ -169,8 +176,8 @@ if __name__ == '__main__':
     ax7.plot(tair, gs_ele, "g--")
 
     vpd = 3.0
-    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
-    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
+    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, CM)
+    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, CM)
 
     ax2.plot(tair, et_amb, "g-")
     ax2.plot(tair, et_ele, "g--")
@@ -180,8 +187,8 @@ if __name__ == '__main__':
     ax8.plot(tair, gs_ele, "g--")
 
     vpd = 5.0
-    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, C)
-    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, C)
+    gs_amb, et_amb, an_amb = get_values(vpd, Ca1, tair, par, pressure, CM)
+    gs_ele, et_ele, an_ele = get_values(vpd, Ca2, tair, par, pressure, CM)
 
     ax3.plot(tair, et_amb, "g-")
     ax3.plot(tair, et_ele, "g--")

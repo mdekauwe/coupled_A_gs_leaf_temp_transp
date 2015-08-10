@@ -48,6 +48,10 @@ class PenmanMonteith(object):
                 rnet):
         """
         Calculate transpiration following Penman-Monteith at the leaf level
+        accounting for effects of leaf temperature and feedback on evaporation.
+        For example, if leaf temperature is above the leaf temp, it can increase
+        vpd, but it also reduves the lw and thus the net rad availble for
+        evaporaiton.
 
         Parameters:
         ----------
@@ -76,7 +80,7 @@ class PenmanMonteith(object):
         et : float
             transpiration (mol H2O m-2 s-1)
         lambda_et : float
-            transpiration (W m-2)
+            latent heat flux (W m-2)
         """
         # latent heat of water vapour at air temperature (j mol-1)
         lambda_et = (self.h2olv0 - 2.365E3 * tair) * self.h2omw
@@ -90,7 +94,7 @@ class PenmanMonteith(object):
 
         if gw <= 0.0:
             # gs = 0, transpiration = 0
-            return 0.0, 0.0
+            return (0.0, 0.0)
         else:
             # Y cancels in eqn 10
             arg1 = (slope * rnet + (vpd * self.kpa_2_pa) * gh * self.cp *
@@ -104,7 +108,9 @@ class PenmanMonteith(object):
             # et units = mol H20 m-2 s-1,
             # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
             # to get to kg m2 d-1 or mm d-1
-            return et / lambda_et, LE_et
+
+            print et / lambda_et*18*0.001*86400.,tleaf, tair, vpd, pressure, wind, par, gh, gw, rnet
+            return (et / lambda_et, LE_et)
 
     def calc_conductances(self, tair_k, tleaf, tair, wind, gs, cmolar):
         """
@@ -179,7 +185,11 @@ class PenmanMonteith(object):
     def calc_rnet(self, par, tair, tair_k, tleaf_k, vpd):
         """
         Net isothermal radaiation (Rnet, W m-2), i.e. the net radiation that
-        would be recieved if leaf and air temperature were the same
+        would be recieved if leaf and air temperature were the same.
+
+        References:
+        ----------
+        Jarvis and McNaughton (1986)
 
         Parameters:
         ----------

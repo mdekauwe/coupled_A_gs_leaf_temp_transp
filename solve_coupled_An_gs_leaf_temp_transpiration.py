@@ -20,16 +20,17 @@ from farq import FarquharC3
 from penman_monteith_leaf import PenmanMonteith
 
 class CoupledModel(object):
-    """Iteratively solve leaf temp, ci, gs and An."""
+    """Iteratively solve leaf temp, Ci, gs and An."""
 
-    def __init__(self, g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
-                 deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs, gs_model,
+    def __init__(self, g0, g1, D0, gamma, Vcmax25, Jmax25, Rd25, Eaj, Eav,
+                 deltaSj, deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs, gs_model,
                  leaf_absorptance=0.5, iter_max=100):
 
         # set params
         self.g0 = g0
         self.g1 = g1
         self.D0 = D0
+        self.gamma = gamma
         self.Vcmax25 = Vcmax25
         self.Jmax25 = Jmax25
         self.Rd25 = Rd25
@@ -95,7 +96,8 @@ class CoupledModel(object):
         """
 
         F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=True, model_Q10=True,
-                       gs_model=self.gs_model)
+                       gs_model=self.gs_model, gamma=self.gamma, g0=self.g0,
+                       g1=self.g1, D0=self.D0)
         P = PenmanMonteith(self.leaf_width, self.leaf_absorptance)
 
         # set initialise values
@@ -130,10 +132,13 @@ class CoupledModel(object):
 
             gbc = gbH * self.GBH_2_GBC
             Cs = Ca - An / gbc # boundary layer of leaf
-            dleaf = (et * pressure / gw) * self.pa_2_kpa # kPa
+            if et == 0.0 or gw == 0.0:
+                dleaf = 0.0
+            else:
+                dleaf = (et * pressure / gw) * self.pa_2_kpa # kPa
 
 
-            print "%f %f %f %f %f %f" %  (Cs, Tleaf, dleaf, An*12.*0.000001*86400., gs, et*18*0.001*86400.)
+            #print "%f %f %f %f %f %f" %  (Cs, Tleaf, dleaf, An*12.*0.000001*86400., gs, et*18*0.001*86400.)
 
             # Check for convergence...?
             if math.fabs(Tleaf - new_tleaf) < 0.02:
@@ -198,14 +203,6 @@ class CoupledModel(object):
         # W m-2 = J m-2 s-1
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd)
 
-
-        #umol_m2_s_to_W_m2 = 2.0 / self.umol_to_j
-        #par *= umol_m2_s_to_W_m2
-        #albedo = 0.2
-        #net_lw = (107.0 - 0.3 * tair)
-        #rnet = max(0.0, par * (1.0 - albedo) - net_lw)
-
-
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                  wind, gs, cmolar)
         (et, le_et) = P.calc_et(tleaf, tair, vpd, pressure, wind, par,
@@ -220,8 +217,6 @@ class CoupledModel(object):
         # leaf-air temperature difference recalculated from energy balance.
         #delta_T = sensible_heat / (self.cp * air_density * (gh / cmolar))
         delta_T = (rnet - le_et) / (self.cp * self.air_mass * gh)
-
-
         new_Tleaf = tair + delta_T
 
         return (new_Tleaf, et, gbH, gw)
@@ -252,7 +247,6 @@ if __name__ == '__main__':
 
     # hack to get around doing seperate sunlit/shaded leaves
     leaf_absorptance = 0.8 # leaf absorptance of solar radiation [0,1]
-
 
     # variables though obviously fixed here.
     par = 1500.0

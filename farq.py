@@ -56,7 +56,7 @@ class FarquharC3(object):
                  theta_J=0.7, force_vcmax_fit_pts=None,
                  alpha=None, quantum_yield=0.3, absorptance=0.8,
                  change_over_pt=None, model_Q10=False,
-                 gs_model=None):
+                 gs_model=None, gamma=0.0, g0=None, g1=None, D0=1.5):
         """
         Parameters
         ----------
@@ -97,6 +97,18 @@ class FarquharC3(object):
         change_over_pt : None or value of Ci
             Explicitly set the transition point between Aj and Ac.
 
+        gs_model : sting
+            stomatal conductance model - Leuning/Medlyn
+        gamma : float
+            is the CO2 compensation point of photosynthesis (umol m-2 s-1)
+        g0 : float
+            residual stomatal conductance as net assimilation rate reaches
+            zero (mol m-2 s-1)
+        g1 : float
+            and the slope of the sensitivity of stomatal conductance to
+            assimilation (mol m-2 s-1)
+        D0 : float
+            the sensitivity of stomatal conductance to D (kPa)
         """
         self.peaked_Jmax = peaked_Jmax
         self.peaked_Vcmax = peaked_Vcmax
@@ -120,10 +132,12 @@ class FarquharC3(object):
         self.change_over_pt = change_over_pt
         self.model_Q10 = model_Q10
         self.gs_model = gs_model
-
+        self.gamma = gamma
+        self.g0 = g0
+        self.g1 = g1
+        self.D0 = D0
         self.GSC_2_GSW = 1.57
         self.GSW_2_GSC = 1.0 / self.GSC_2_GSW
-
 
     def calc_photosynthesis(self, Cs=None, Tleaf=None, Par=None, Jmax=None,
                             Vcmax=None, Jmax25=None, Vcmax25=None, Rd=None,
@@ -220,30 +234,24 @@ class FarquharC3(object):
             J = Jmax
 
         if self.gs_model == "leuning":
-            gamma = 0.0
-            g0 = 0.01 * self.GSW_2_GSC
-            g1 = 9.0
-            D0 = 1.5 # kpa
-            gs_over_a = g1 / (Cs - gamma) / (1.0 + vpd / D0)
+            g0 = self.g0 * self.GSW_2_GSC
+            gs_over_a = self.g1 / (Cs - self.gamma) / (1.0 + vpd / self.D0)
 
             # conductance to CO2
             gs_over_a *= self.GSW_2_GSC
-            ci_over_ca = 1.0 - 1.6 * (1.0 + vpd / D0) / g1
-
+            ci_over_ca = 1.0 - 1.6 * (1.0 + vpd / self.D0) / self.g1
 
         elif self.gs_model == "medlyn":
-            # I want zero, but zero messes up the convergence, numerical
+            # I want a zero g0, but zero messes up the convergence, numerical
             # fix
             g0 = 1E-09
-            g1 = 2.35
             if vpd < 0.05:
                 vpd = 0.05
 
             # 1.6 (from corrigendum to Medlyn et al 2011) is missing here,
             # because we are calculating conductance to CO2!
-            gs_over_a = (1.0 + g1 / math.sqrt(vpd)) / Cs
-            ci_over_ca = g1 / (g1 + math.sqrt(vpd))
-
+            gs_over_a = (1.0 + self.g1 / math.sqrt(vpd)) / Cs
+            ci_over_ca = self.g1 / (self.g1 + math.sqrt(vpd))
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)
@@ -254,7 +262,6 @@ class FarquharC3(object):
 
         # intercellular CO2 concentration
         Cic = self.quadratic(a=A, b=B, c=C, large=True)
-
 
         if Cic <= 0.0 or Cic > Cs:
             Ac = 0.0
@@ -296,8 +303,7 @@ class FarquharC3(object):
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-        gs = max(g0, g0 + gs_over_a * An)
-        
+        gs = max(self.g0, self.g0 + gs_over_a * An)
 
         return (An, Acn, Ajn, gs)
 
