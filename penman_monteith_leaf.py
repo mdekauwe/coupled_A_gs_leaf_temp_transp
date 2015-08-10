@@ -265,8 +265,7 @@ class PenmanMonteith(object):
         Values of saturation vapour pressure from the Tetens formula are
         within 1 Pa of the exact values.
 
-        Taken from Stull 2000 Meteorology for Scientist and Engineers, but see
-        also Jones 1992 p 110 (note error in a - wrong units)
+        Taken from
 
         Parameters:
         ----------
@@ -281,9 +280,12 @@ class PenmanMonteith(object):
             Saturation vapor pressure (Pa K-1)
 
         References:
-        Buck, A. (1981) New equations for computing vapor pressure and
-        enhancement factor. Journal of Applied Meteorology, 20, 1527-1532
+        * Buck, A. (1981) New equations for computing vapor pressure and
+          enhancement factor. Journal of Applied Meteorology, 20, 1527-1532
 
+        but also see...
+        * Stull 2000 Meteorology for Scientist and Engineers
+        * Jones 1992 p 110 (note error in a - wrong units)
         """
         #Tk = tair + self.DEG_TO_KELVIN
         #e0 = 0.611 * self.kpa_2_pa
