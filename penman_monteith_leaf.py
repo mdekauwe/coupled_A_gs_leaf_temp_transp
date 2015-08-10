@@ -236,9 +236,9 @@ class PenmanMonteith(object):
         rnet = SW_abs + lw_in - lw_out
 
         # Rnet < 0.0 causes discontinuity in plot, which I guess isn't there
-        # if summing over day...set to zero to stop this for instantaneous
-        # calculations
-        rnet = max(0.0, SW_abs + lw_in - lw_out)
+        # if summing over day/not calculating instantaneous values...
+        # set to zero to stop this for instantaneous calculations
+        #rnet = max(0.0, SW_abs + lw_in - lw_out)
 
         return rnet
 
