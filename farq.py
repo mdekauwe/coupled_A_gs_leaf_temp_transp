@@ -303,9 +303,9 @@ class FarquharC3(object):
         Acn = Ac - Rd
         Ajn = Aj - Rd
 
-        gs = max(self.g0, self.g0 + gs_over_a * An)
+        gsc = max(self.g0, self.g0 + gs_over_a * An)
 
-        return (An, Acn, Ajn, gs)
+        return (An, Acn, Ajn, gsc)
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):
         """ Check the user supplied arguments, either they supply the values

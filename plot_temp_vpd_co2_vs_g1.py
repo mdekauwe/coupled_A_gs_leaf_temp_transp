@@ -25,25 +25,25 @@ def get_values(vpd, Ca, tair, par, pressure, C):
     et_store = []
     An_store = []
     for ta in tair:
-        (An, gs, et) = C.main(ta, par, vpd, wind, pressure, Ca)
-        gs_store.append(gs)
+        (An, gsw, et) = C.main(ta, par, vpd, wind, pressure, Ca)
+        gs_store.append(gsw)
         et_store.append(et*18*0.001*86400.)
         An_store.append(An*12.*0.000001*86400.)
     return gs_store, et_store, An_store
 
 if __name__ == '__main__':
 
-    fig = plt.figure(figsize=(12,9))
+    fig = plt.figure(figsize=(9,6))
     fig.subplots_adjust(hspace=0.1)
     fig.subplots_adjust(wspace=0.1)
     plt.rcParams['text.usetex'] = False
     plt.rcParams['font.family'] = "sans-serif"
     plt.rcParams['font.sans-serif'] = "Helvetica"
-    plt.rcParams['axes.labelsize'] = 14
-    plt.rcParams['font.size'] = 12
-    plt.rcParams['legend.fontsize'] = 10
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
+    plt.rcParams['axes.labelsize'] = 10
+    plt.rcParams['font.size'] = 10
+    plt.rcParams['legend.fontsize'] = 8
+    plt.rcParams['xtick.labelsize'] = 10
+    plt.rcParams['ytick.labelsize'] = 10
 
     almost_black = '#262626'
     # change the tick colors also to the almost black
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
 
     # A stuff
-    Vcmax25 = 30.0
+    Vcmax25 = 40.0          # ENF CABLE value
     Jmax25 = Vcmax25 * 2.0
     Rd25 = 2.0
     Eaj = 30000.0
@@ -201,17 +201,22 @@ if __name__ == '__main__':
     ax1.set_ylabel("$E$ (mm d$^{-1}$)")
     ax4.set_ylabel("$A_{\mathrm{n}}$ (g C m$^{-2}$ d$^{-1}$)")
     ax7.set_ylabel("$g_{\mathrm{s}}$ (mol m$^{-2}$ s$^{-1}$)")
+
+    ax1.get_yaxis().set_label_coords(-0.15,0.5)
+    ax4.get_yaxis().set_label_coords(-0.15,0.5)
+    ax7.get_yaxis().set_label_coords(-0.15,0.5)
+
     ax1.legend(numpoints=1, loc="best", frameon=False)
 
     ax1.set_ylim(0,4)
     ax2.set_ylim(0,4)
     ax3.set_ylim(0,4)
-    ax4.set_ylim(0,12)
-    ax5.set_ylim(0,12)
-    ax6.set_ylim(0,12)
-    ax7.set_ylim(0,0.06)
-    ax8.set_ylim(0,0.06)
-    ax9.set_ylim(0,0.06)
+    ax4.set_ylim(0,15)
+    ax5.set_ylim(0,15)
+    ax6.set_ylim(0,15)
+    ax7.set_ylim(0,0.15)
+    ax8.set_ylim(0,0.15)
+    ax9.set_ylim(0,0.15)
 
     ax1.locator_params(nbins=4)
     ax2.locator_params(nbins=4)

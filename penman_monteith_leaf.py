@@ -37,7 +37,6 @@ class PenmanMonteith(object):
         self.leaf_width = leaf_width    # (m)
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
 
-
         self.GSC_2_GSW = 1.57
         self.GSW_2_GSC = 1.0 / self.GSC_2_GSW
 
@@ -89,6 +88,7 @@ class PenmanMonteith(object):
         # (pa K-1), note kelvin conversion in func
         slope = ((self.calc_esat(tair + 0.1, pressure) -
                   self.calc_esat(tair, pressure)) / 0.1)
+        #slope = self.calc_slope_of_saturation_vapour_pressure_curve(tair)
 
         # psychrometric constant
         gamma = self.cp * self.air_mass * pressure / lambda_et
@@ -112,7 +112,7 @@ class PenmanMonteith(object):
 
             return (et / lambda_et, LE_et)
 
-    def calc_conductances(self, tair_k, tleaf, tair, wind, gs, cmolar):
+    def calc_conductances(self, tair_k, tleaf, tair, wind, gsc, cmolar):
         """
         Both forced and free convection contribute to exchange of heat and mass
         through leaf boundary layers at the wind speeds typically encountered
@@ -130,8 +130,8 @@ class PenmanMonteith(object):
             leaf temperature (deg C)
         wind : float
             wind speed (m s-1)
-        gs : float
-            stomatal conductance (mol m-2 s-1)
+        gsc : float
+            stomatal conductance to CO2 (mol m-2 s-1)
         cmolar : float
             Conversion from m s-1 to mol m-2 s-1
 
@@ -175,7 +175,7 @@ class PenmanMonteith(object):
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
         gbw = gbH * self.GSC_2_GSW
-        gsw = gs * self.GSC_2_GSW
+        gsw = gsc * self.GSC_2_GSW
 
         # total leaf conductance to water vapour (mol m-2 s-1)
         gw = (gbw * gsw) / (gbw + gsw)
@@ -235,7 +235,10 @@ class PenmanMonteith(object):
         # isothermal net radiation (W m-2), note W m-2 = J m-2 s-1
         rnet = SW_abs + lw_in - lw_out
 
-        print rnet, ea, emissivity_atm, lw_in, lw_out
+        # Rnet < 0.0 causes discontinuity in plot, which I guess isn't there
+        # if summing over day...set to zero to stop this for instantaneous
+        # calculations
+        rnet = max(0.0, SW_abs + lw_in - lw_out)
 
         return rnet
 
@@ -315,7 +318,7 @@ class PenmanMonteith(object):
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd, pressure)
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
-                                                 wind, gs, cmolar)
+                                                 wind, gsc, cmolar)
         (et, lambda_et) = P.calc_et(tleaf, tair, vpd, pressure, wind, par,
                                     gh, gw, rnet)
         return (et, lambda_et)

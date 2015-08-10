@@ -67,6 +67,9 @@ class CoupledModel(object):
         self.leaf_absorptance = leaf_absorptance # leaf abs of solar rad [0,1]
         self.Rspecifc_dry_air = 287.058 # Jkg-1 K-1
 
+        self.GSC_2_GSW = 1.57
+        self.GSW_2_GSC = 1.0 / self.GSC_2_GSW
+        
     def main(self, tair, par, vpd, wind, pressure, Ca):
         """
         Parameters:
@@ -113,7 +116,7 @@ class CoupledModel(object):
         iter = 0
         while True:
             (An, Acn,
-             Ajn, gs) = F.calc_photosynthesis(Cs=Cs, Tleaf=Tleaf_K, Par=par,
+             Ajn, gsc) = F.calc_photosynthesis(Cs=Cs, Tleaf=Tleaf_K, Par=par,
                                               Jmax25=self.Jmax25,
                                               Vcmax25=self.Vcmax25,
                                               Q10=self.Q10, Eaj=self.Eaj,
@@ -125,7 +128,7 @@ class CoupledModel(object):
 
 
             # Calculate new Tleaf, dleaf, Cs
-            (new_tleaf, et, gbH, gw) = self.calc_leaf_temp(P, Tleaf, tair, gs,
+            (new_tleaf, et, gbH, gw) = self.calc_leaf_temp(P, Tleaf, tair, gsc,
                                                            par, vpd, pressure,
                                                            wind)
 
@@ -153,10 +156,11 @@ class CoupledModel(object):
 
             iter += 1
 
+        gsw = gsc * self.GSC_2_GSW
 
-        return (An, gs, et)
+        return (An, gsw, et)
 
-    def calc_leaf_temp(self, P=None, tleaf=None, tair=None, gs=None, par=None,
+    def calc_leaf_temp(self, P=None, tleaf=None, tair=None, gsc=None, par=None,
                        vpd=None, pressure=None, wind=None):
         """
         Resolve leaf temp
@@ -204,7 +208,7 @@ class CoupledModel(object):
         rnet = P.calc_rnet(par, tair, tair_k, tleaf_k, vpd, pressure)
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
-                                                 wind, gs, cmolar)
+                                                 wind, gsc, cmolar)
         (et, le_et) = P.calc_et(tleaf, tair, vpd, pressure, wind, par,
                                 gh, gw, rnet)
 
