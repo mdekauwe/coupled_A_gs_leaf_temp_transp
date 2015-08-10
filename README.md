@@ -1,7 +1,7 @@
-# Solve coupled $C_i$, $g_s$, $E$, $A_n$ and $T_{leaf}$.
+# Solve coupled Ci, gs, E, An and Tleaf.
 
 ## Overview ##
-Iteratively solve the intercellular CO$_2$ concentration ($C_i$), stomatal conductance ($g_s$), transpiration ($E$), net leaf assimilation ($A_n$) and leaf temperature $T_{leaf}$.
+Iteratively solve the intercellular CO$_2$ concentration (Ci), stomatal conductance (gs), transpiration (E), net leaf assimilation (An) and leaf temperature (Tleaf).
 
 Code follows the same logic as MAESTRA, though it departs in a few places where I've felt the need to simplfy.
 
