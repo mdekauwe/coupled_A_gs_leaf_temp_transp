@@ -24,7 +24,7 @@ class PenmanMonteith(object):
 
         self.kpa_2_pa = 1000.
         self.sigma = 5.6704E-08        # Stefan-Boltzmann constant, (w m-2 k-4)
-        self.emissivity_leaf = 0.99    # emissivity of leaf (-)
+        self.emissivity_leaf = 0.98    # emissivity of leaf (-)
         self.cp = 1010.0               # specific heat of dry air (j kg-1 k-1)
         self.h2olv0 = 2.501e6          # latent heat H2O (J kg-1)
         self.h2omw = 18E-3             # mol mass H20 (kg mol-1)
@@ -39,6 +39,7 @@ class PenmanMonteith(object):
 
         self.GSC_2_GSW = 1.57
         self.GSW_2_GSC = 1.0 / self.GSC_2_GSW
+        self.GBH_2_GBW = 1.075
 
         self.angle = angle              # angle from horizontal (deg) 0-90
         self.PAR_2_SW = 2.0 / self.umol_to_j
@@ -93,24 +94,21 @@ class PenmanMonteith(object):
         # psychrometric constant
         gamma = self.cp * self.air_mass * pressure / lambda_et
 
-        if gw <= 0.0:
-            # gs = 0, transpiration = 0
-            return (0.0, 0.0)
-        else:
-            # Y cancels in eqn 10
-            arg1 = (slope * rnet + (vpd * self.kpa_2_pa) * gh * self.cp *
-                    self.air_mass)
-            arg2 = slope + gamma * gh / gw
-            et = arg1 / arg2
+        # Y cancels in eqn 10
+        arg1 = (slope * rnet + (vpd * self.kpa_2_pa) * gh * self.cp *
+                self.air_mass)
+        arg2 = slope + gamma * gh / gw
 
-            # latent heat loss
-            LE_et = et
+        # W m-2
+        LE = arg1 / arg2
 
-            # et units = mol H20 m-2 s-1,
-            # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
-            # to get to kg m2 d-1 or mm d-1
+        # transpiration, mol H20 m-2 s-1
+        # multiply by 18 (grams)* 0.001 (grams to kg) * 86400.
+        # to get to kg m2 d-1 or mm d-1
+        et = LE / lambda_et
 
-            return (et / lambda_et, LE_et)
+        # et units = mol H20 m-2 s-1,
+        return (et, LE)
 
     def calc_conductances(self, tair_k, tleaf, tair, wind, gsc, cmolar):
         """
@@ -160,12 +158,15 @@ class PenmanMonteith(object):
         # (mol m-2 s-1)
         gbHw = 0.003 * math.sqrt(wind / self.leaf_width) * cmolar
 
-        # grashof number
-        grashof_num = 1.6E8 * math.fabs(tleaf - tair) * self.leaf_width**3
+        if (tleaf - tair) != 0.0:
+            # grashof number
+            grashof_num = 1.6E8 * math.fabs(tleaf - tair) * self.leaf_width**3
 
-        # boundary layer conductance for free convection
-        # (mol m-2 s-1)
-        gbHf = 0.5 * self.dheat * grashof_num**0.25 / self.leaf_width * cmolar
+            # boundary layer conductance for free convection
+            # (mol m-2 s-1)
+            gbHf = 0.5 * self.dheat * grashof_num**0.25 / self.leaf_width * cmolar
+        else:
+            gbHf = 0.0
 
         # total boundary layer conductance to heat for one side of the leaf
         gbH = gbHw + gbHf
@@ -174,10 +175,10 @@ class PenmanMonteith(object):
         # single-sided value used for gbv
         # total leaf conductance to heat (mol m-2 s-1), two sided see above.
         gh = 2.0 * (gbH + grn)
-        gbw = gbH * self.GSC_2_GSW
-        gsw = gsc * self.GSC_2_GSW
 
         # total leaf conductance to water vapour (mol m-2 s-1)
+        gbw = gbH * self.GBH_2_GBW
+        gsw = gsc * self.GSC_2_GSW
         gw = (gbw * gsw) / (gbw + gsw)
 
         return (grn, gh, gbH, gw)
@@ -223,22 +224,23 @@ class PenmanMonteith(object):
         # atmospheric water vapour pressure (Pa)
         ea = max(0.0, calc_esat(tair, pressure) - (vpd * self.kpa_2_pa))
 
+        # apparent emissivity for a hemisphere radiating at air temperature
         # eqn D4
         emissivity_atm = 0.642 * (ea / tair_k)**(1.0 / 7.0)
 
-        # incoming long-wave radiation (W m-2)
-        lw_in = emissivity_atm * self.sigma * tair_k**4
+        # downward long-wave radiation from the sky (W m-2)
+        lw_dw = emissivity_atm * self.sigma * tair_k**4
 
-        # outgoing long-wave radiation (W m-2)
-        lw_out = self.emissivity_leaf * self.sigma * tleaf_k**4
+        # outgoing long-wave radiation at the top of the canopy (leaf) (W m-2)
+        lw_up = self.emissivity_leaf * self.sigma * tleaf_k**4
 
         # isothermal net radiation (W m-2), note W m-2 = J m-2 s-1
+        rnet = SW_abs + (lw_up - lw_dw)
 
         # Rnet < 0.0 causes discontinuity in plot, which I guess isn't there
         # if summing over day/not calculating instantaneous values...
         # set to zero to stop this for instantaneous calculations
-        #rnet = SW_abs + lw_in - lw_out
-        rnet = max(0.0, SW_abs + lw_in - lw_out)
+        #rnet = max(0.0, rnet)
 
         return rnet
 

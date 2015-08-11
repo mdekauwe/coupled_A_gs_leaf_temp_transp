@@ -69,7 +69,7 @@ class CoupledModel(object):
 
         self.GSC_2_GSW = 1.57
         self.GSW_2_GSC = 1.0 / self.GSC_2_GSW
-        
+
     def main(self, tair, par, vpd, wind, pressure, Ca):
         """
         Parameters:
@@ -105,6 +105,7 @@ class CoupledModel(object):
 
         # set initialise values
         dleaf = vpd
+        dair = vpd
         Cs = Ca
         Tleaf = tair
         Tleaf_K = Tleaf + self.deg2kelvin
@@ -136,7 +137,7 @@ class CoupledModel(object):
             gbc = gbH * self.GBH_2_GBC
             Cs = Ca - An / gbc # boundary layer of leaf
             if et == 0.0 or gw == 0.0:
-                dleaf = 0.0
+                dleaf = dair
             else:
                 dleaf = (et * pressure / gw) * self.pa_2_kpa # kPa
 
@@ -209,8 +210,12 @@ class CoupledModel(object):
 
         (grn, gh, gbH, gw) = P.calc_conductances(tair_k, tleaf, tair,
                                                  wind, gsc, cmolar)
-        (et, le_et) = P.calc_et(tleaf, tair, vpd, pressure, wind, par,
-                                gh, gw, rnet)
+        if gsc == 0.0:
+            et = 0.0
+            le_et = 0.0
+        else:
+            (et, le_et) = P.calc_et(tleaf, tair, vpd, pressure, wind, par,
+                                    gh, gw, rnet)
 
         # D6 in Leuning
         Y = 1.0 / (1.0 + grn / gbH)

@@ -302,7 +302,7 @@ class FarquharC3(object):
         An = np.minimum(Ac, Aj) - Rd
         Acn = Ac - Rd
         Ajn = Aj - Rd
-
+        
         gsc = max(self.g0, self.g0 + gs_over_a * An)
 
         return (An, Acn, Ajn, gsc)

@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 from farq import FarquharC3
 from solve_coupled_An_gs_leaf_temp_transpiration import CoupledModel
-from utils import vpd_to_rh, get_dewpoint
+from utils import vpd_to_rh, get_dewpoint, calc_esat
 
 def get_values(vpd, Ca, tair, par, pressure, C):
     gs_store = []
@@ -28,6 +28,18 @@ def get_values(vpd, Ca, tair, par, pressure, C):
     for ta in tair:
 
         rh = vpd_to_rh(vpd, ta, pressure)
+
+        # saturated vapour pressure
+        #esat = calc_esat(ta, pressure) / 1000.
+
+        # vapour pressure
+        #e = esat - vpd
+        #if e > 0.0:
+        #print e,
+        #e = rh * esat
+        #e_over_esat = e / esat
+
+
         Td = get_dewpoint(ta, rh*100.0)
         if Td > 0.0:
             (An, gsw, et) = C.main(ta, par, vpd, wind, pressure, Ca)
@@ -99,13 +111,11 @@ if __name__ == '__main__':
 
     # Misc stuff
     leaf_width = 0.01
-
     SW_abs = 0.5 # absorptance to short_wave rad [0,1], typically 0.4-0.6
 
 
     # variables though obviously fixed here.
     par = 1500.0
-
     wind = 2.5
     pressure = 101325.0
 
@@ -260,10 +270,10 @@ if __name__ == '__main__':
     plt.setp(ax8.get_yticklabels(), visible=False)
     plt.setp(ax9.get_yticklabels(), visible=False)
 
-    ax1.set_title("VPD = 1.0 (kPa)")
-    ax2.set_title("VPD = 3.0 (kPa)")
-    ax3.set_title("VPD = 5.0 (kPa)")
+    ax1.set_title("$D$ = 1.0 (kPa)")
+    ax2.set_title("$D$ = 3.0 (kPa)")
+    ax3.set_title("$D$ = 5.0 (kPa)")
 
-    fig.savefig("/Users/mdekauwe/Desktop/temp_co2_vs_g1.pdf", bbox_inches='tight',
+    fig.savefig("/Users/mdekauwe/Desktop/Fig_S01.pdf", bbox_inches='tight',
                 pad_inches=0.1)
     plt.show()

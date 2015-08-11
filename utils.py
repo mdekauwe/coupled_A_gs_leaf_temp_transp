@@ -52,17 +52,17 @@ def calc_esat(tair, pressure):
       (note error in a - wrong units)
 
     """
-    #a = 613.75 # correct units
-    #b = 17.502
-    #c = 240.97
-    #esat = a * math.exp( (b * tair) / (c + tair) )
+    a = 613.75 # correct units
+    b = 17.502
+    c = 240.97
+    esat = a * math.exp( (b * tair) / (c + tair) )
 
     # Buck...
-    kpa_2_pa = 1000.
-    a = 0.61121 # kPa
-    b = 17.502
-    c = 240.97 # deg C
-    esat = a * (math.exp(b * tair / (c + tair))) * kpa_2_pa
+    #kpa_2_pa = 1000.
+    #a = 0.61121 # kPa
+    #b = 17.502
+    #c = 240.97 # deg C
+    #esat = a * (math.exp(b * tair / (c + tair))) * kpa_2_pa
 
     return esat
 
