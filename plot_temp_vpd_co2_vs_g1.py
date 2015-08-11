@@ -27,6 +27,7 @@ def get_values(rh, Ca, tair, par, pressure, C):
     esat = calc_esat(tair, pressure)
     ea = rh / 100. * esat
     vpd = (esat - ea) * pa_2_kpa
+    print vpd
 
     gs_store = []
     et_store = []
@@ -137,7 +138,7 @@ if __name__ == '__main__':
     #
     ## LEUNING
     #
-    rh = 20.
+    rh = 30.
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
 
@@ -159,7 +160,7 @@ if __name__ == '__main__':
     ax8.plot(tair_2plot, gs_amb, "r-")
     ax8.plot(tair_2plot, gs_ele, "r--")
 
-    rh = 80.0
+    rh = 90.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
 
@@ -175,7 +176,7 @@ if __name__ == '__main__':
     #
 
 
-    rh = 20.0
+    rh = 30.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
 
@@ -197,7 +198,7 @@ if __name__ == '__main__':
     ax8.plot(tair_2plot, gs_amb, "g-")
     ax8.plot(tair_2plot, gs_ele, "g--")
 
-    rh = 80.0
+    rh = 90.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
 
