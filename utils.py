@@ -1,5 +1,5 @@
 
-import math
+import numpy as np
 
 def vpd_to_rh(vpd, tair, pressure):
     """
@@ -55,7 +55,7 @@ def calc_esat(tair, pressure):
     a = 613.75 # correct units
     b = 17.502
     c = 240.97
-    esat = a * math.exp( (b * tair) / (c + tair) )
+    esat = a * np.exp( (b * tair) / (c + tair) )
 
     # Buck...
     #kpa_2_pa = 1000.

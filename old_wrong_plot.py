@@ -20,27 +20,33 @@ from farq import FarquharC3
 from solve_coupled_An_gs_leaf_temp_transpiration import CoupledModel
 from utils import vpd_to_rh, get_dewpoint, calc_esat
 
-def get_values(rh, Ca, tair, par, pressure, C):
-    kpa_2_pa = 1000.
-    pa_2_kpa = 1.0 / kpa_2_pa
-
-    esat = calc_esat(tair, pressure)
-    ea = rh / 100. * esat
-    vpd = (esat - ea) * pa_2_kpa
-
+def get_values(vpd, Ca, tair, par, pressure, C):
     gs_store = []
     et_store = []
     An_store = []
     tair_store = []
-    for i,ta in enumerate(tair):
+    for ta in tair:
 
-        #Td = get_dewpoint(ta, rh)
-        #if Td > 0.0:
-        (An, gsw, et) = C.main(ta, par, vpd[i], wind, pressure, Ca)
-        gs_store.append(gsw)
-        et_store.append(et*18*0.001*86400.)
-        An_store.append(An*12.*0.000001*86400.)
-        tair_store.append(ta)
+        rh = vpd_to_rh(vpd, ta, pressure)
+
+        # saturated vapour pressure
+        #esat = calc_esat(ta, pressure) / 1000.
+
+        # vapour pressure
+        #e = esat - vpd
+        #if e > 0.0:
+        #print e,
+        #e = rh * esat
+        #e_over_esat = e / esat
+
+
+        Td = get_dewpoint(ta, rh*100.0)
+        if Td > 0.0:
+            (An, gsw, et) = C.main(ta, par, vpd, wind, pressure, Ca)
+            gs_store.append(gsw)
+            et_store.append(et*18*0.001*86400.)
+            An_store.append(An*12.*0.000001*86400.)
+            tair_store.append(ta)
     return gs_store, et_store, An_store, tair_store
 
 if __name__ == '__main__':
@@ -132,25 +138,24 @@ if __name__ == '__main__':
 
     tair = np.linspace(0.1, 40, 50)
 
-
-
     #
     ## LEUNING
     #
-    rh = 20.
-    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
-    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
 
-    ax1.plot(tair_2plot, et_amb, "r-")
-    ax1.plot(tair_2plot, et_ele, "r--")
+    vpd = 1.0
+    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(vpd, Ca1, tair, par, pressure, CL)
+    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(vpd, Ca2, tair, par, pressure, CL)
+
+    ax1.plot(tair_2plot, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair_2plot, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
     ax4.plot(tair_2plot, an_amb, "r-")
     ax4.plot(tair_2plot, an_ele, "r--")
     ax7.plot(tair_2plot, gs_amb, "r-")
     ax7.plot(tair_2plot, gs_ele, "r--")
 
-    vpd = 60.0
-    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
-    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
+    vpd = 3.0
+    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(vpd, Ca1, tair, par, pressure, CL)
+    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(vpd, Ca2, tair, par, pressure, CL)
 
     ax2.plot(tair_2plot, et_amb, "r-")
     ax2.plot(tair_2plot, et_ele, "r--")
@@ -159,12 +164,12 @@ if __name__ == '__main__':
     ax8.plot(tair_2plot, gs_amb, "r-")
     ax8.plot(tair_2plot, gs_ele, "r--")
 
-    rh = 80.0
-    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
-    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
+    vpd = 5.0
+    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(vpd, Ca1, tair, par, pressure, CL)
+    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(vpd, Ca2, tair, par, pressure, CL)
 
-    ax3.plot(tair_2plot, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
-    ax3.plot(tair_2plot, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
+    ax3.plot(tair_2plot, et_amb, "r-")
+    ax3.plot(tair_2plot, et_ele, "r--")
     ax6.plot(tair_2plot, an_amb, "r-")
     ax6.plot(tair_2plot, an_ele, "r--")
     ax9.plot(tair_2plot, gs_amb, "r-")
@@ -175,20 +180,20 @@ if __name__ == '__main__':
     #
 
 
-    rh = 20.0
-    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
-    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
+    vpd = 1.0
+    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(vpd, Ca1, tair, par, pressure, CM)
+    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(vpd, Ca2, tair, par, pressure, CM)
 
-    ax1.plot(tair_2plot, et_amb, "g-")
-    ax1.plot(tair_2plot, et_ele, "g--")
+    ax1.plot(tair_2plot, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair_2plot, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
     ax4.plot(tair_2plot, an_amb, "g-")
     ax4.plot(tair_2plot, an_ele, "g--")
     ax7.plot(tair_2plot, gs_amb, "g-")
     ax7.plot(tair_2plot, gs_ele, "g--")
 
-    rh = 60.0
-    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
-    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
+    vpd = 3.0
+    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(vpd, Ca1, tair, par, pressure, CM)
+    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(vpd, Ca2, tair, par, pressure, CM)
 
     ax2.plot(tair_2plot, et_amb, "g-")
     ax2.plot(tair_2plot, et_ele, "g--")
@@ -197,12 +202,12 @@ if __name__ == '__main__':
     ax8.plot(tair_2plot, gs_amb, "g-")
     ax8.plot(tair_2plot, gs_ele, "g--")
 
-    rh = 80.0
-    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
-    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
+    vpd = 5.0
+    (gs_amb, et_amb, an_amb, tair_2plot) = get_values(vpd, Ca1, tair, par, pressure, CM)
+    (gs_ele, et_ele, an_ele, tair_2plot) = get_values(vpd, Ca2, tair, par, pressure, CM)
 
-    ax3.plot(tair_2plot, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
-    ax3.plot(tair_2plot, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
+    ax3.plot(tair_2plot, et_amb, "g-")
+    ax3.plot(tair_2plot, et_ele, "g--")
     ax6.plot(tair_2plot, an_amb, "g-")
     ax6.plot(tair_2plot, an_ele, "g--")
     ax9.plot(tair_2plot, gs_amb, "g-")
@@ -217,7 +222,7 @@ if __name__ == '__main__':
     ax4.get_yaxis().set_label_coords(-0.15,0.5)
     ax7.get_yaxis().set_label_coords(-0.15,0.5)
 
-    ax3.legend(numpoints=1, loc="best", frameon=False)
+    ax1.legend(numpoints=1, loc="best", frameon=False)
 
     ax1.set_ylim(0,4)
     ax2.set_ylim(0,4)
@@ -230,15 +235,15 @@ if __name__ == '__main__':
     ax9.set_ylim(0,0.15)
 
 
-    ax1.set_xlim(0,40)
-    ax2.set_xlim(0,40)
-    ax3.set_xlim(0,40)
-    ax4.set_xlim(0,40)
-    ax5.set_xlim(0,40)
-    ax6.set_xlim(0,40)
-    ax7.set_xlim(0,40)
-    ax8.set_xlim(0,40)
-    ax9.set_xlim(0,40)
+    ax1.set_xlim(10,40)
+    ax2.set_xlim(10,40)
+    ax3.set_xlim(10,40)
+    ax4.set_xlim(10,40)
+    ax5.set_xlim(10,40)
+    ax6.set_xlim(10,40)
+    ax7.set_xlim(10,40)
+    ax8.set_xlim(10,40)
+    ax9.set_xlim(10,40)
 
     ax1.locator_params(nbins=4)
     ax2.locator_params(nbins=4)
@@ -265,9 +270,9 @@ if __name__ == '__main__':
     plt.setp(ax8.get_yticklabels(), visible=False)
     plt.setp(ax9.get_yticklabels(), visible=False)
 
-    ax1.set_title("RH $=$ 30 %")
-    ax2.set_title("RH $=$ 60 %")
-    ax3.set_title("RH $=$ 90 %")
+    ax1.set_title("$D$ = 1.0 (kPa)")
+    ax2.set_title("$D$ = 3.0 (kPa)")
+    ax3.set_title("$D$ = 5.0 (kPa)")
 
     fig.savefig("/Users/mdekauwe/Desktop/Fig_S01.pdf", bbox_inches='tight',
                 pad_inches=0.1)
