@@ -22,7 +22,7 @@ def vpd_to_rh(vpd, tair, pressure):
     kpa_2_pa = 1000.
     rh = 1.0 - (vpd * kpa_2_pa) / calc_esat(tair, pressure)
 
-    return rh
+    return max(0.0, min(1.0, rh))
 
 def calc_esat(tair, pressure):
     """
@@ -60,9 +60,9 @@ def calc_esat(tair, pressure):
     esat = a * math.exp( (b * tair) / (c + tair) )
 
     # Buck...
-    #a = 611.21
+    #a = 611.21 # Pa
     #b = 17.502
-    #c = 240.97
+    #c = 240.97 # deg C
     #f = 1.0007 + 3.46 * 10E-8 * pressure
     #esat = f * a * (math.exp(b * tair / (c + tair)))
 

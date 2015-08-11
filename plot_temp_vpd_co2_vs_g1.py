@@ -126,7 +126,7 @@ if __name__ == '__main__':
                      Eaj, Eav,deltaSj, deltaSv, Hdv, Hdj, Q10, leaf_width,
                      SW_abs, gs_model="medlyn")
 
-    tair = np.linspace(0, 40, 50)
+    tair = np.linspace(0.1, 40, 50)
 
     #
     ## LEUNING
