@@ -233,6 +233,9 @@ class FarquharC3(object):
         else:
             J = Jmax
 
+        Jmax = self.adj_for_low_temp(Jmax, Tleaf)
+        Vcmax = self.adj_for_low_temp(Vcmax, Tleaf)
+
         if self.gs_model == "leuning":
             g0 = self.g0 * self.GSW_2_GSC
             gs_over_a = self.g1 / (Cs - self.gamma) / (1.0 + vpd / self.D0)
@@ -302,10 +305,28 @@ class FarquharC3(object):
         An = np.minimum(Ac, Aj) - Rd
         Acn = Ac - Rd
         Ajn = Aj - Rd
-        
+
         gsc = max(self.g0, self.g0 + gs_over_a * An)
 
         return (An, Acn, Ajn, gsc)
+
+    def adj_for_low_temp(self, param, Tk, lower_bound=0.0, upper_bound=10.0):
+        """
+        Function allowing Jmax/Vcmax to be forced linearly to zero at low T
+
+        Parameters:
+        ----------
+        Tk : float
+            air temperature (Kelvin)
+        """
+        Tc = Tk - self.deg2kelvin
+
+        if Tc < lower_bound:
+            param = 0.0
+        elif Tc < upper_bound:
+            param *= (Tc - lower_bound) / (upper_bound - lower_bound)
+
+        return param
 
     def check_supplied_args(self, Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25):
         """ Check the user supplied arguments, either they supply the values
