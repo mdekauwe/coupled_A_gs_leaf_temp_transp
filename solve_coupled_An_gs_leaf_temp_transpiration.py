@@ -129,7 +129,7 @@ class CoupledModel(object):
 
 
             # Calculate new Tleaf, dleaf, Cs
-            (new_tleaf, et, gbH, gw) = self.calc_leaf_temp(P, Tleaf, tair, gsc,
+            (new_tleaf, et, le_et, gbH, gw) = self.calc_leaf_temp(P, Tleaf, tair, gsc,
                                                            par, vpd, pressure,
                                                            wind)
 
@@ -159,7 +159,7 @@ class CoupledModel(object):
 
         gsw = gsc * self.GSC_2_GSW
 
-        return (An, gsw, et)
+        return (An, gsw, et, le_et)
 
     def calc_leaf_temp(self, P=None, tleaf=None, tair=None, gsc=None, par=None,
                        vpd=None, pressure=None, wind=None):
@@ -228,7 +228,7 @@ class CoupledModel(object):
         delta_T = (rnet - le_et) / (self.cp * self.air_mass * gh)
         new_Tleaf = tair + delta_T
 
-        return (new_Tleaf, et, gbH, gw)
+        return (new_Tleaf, et, le_et, gbH, gw)
 
 if __name__ == '__main__':
 

@@ -36,10 +36,12 @@ def get_values(rh, Ca, tair, par, pressure, C):
 
         #Td = get_dewpoint(ta, rh)
         #if Td > 0.0:
-        (An, gsw, et) = C.main(ta, par, vpd[i], wind, pressure, Ca)
-        gs_store.append(gsw)
-        et_store.append(et*18*0.001*86400.)
-        An_store.append(An*12.*0.000001*86400.)
+        (An, gsw, et, LE) = C.main(ta, par, vpd[i], wind, pressure, Ca)
+        gs_store.append(gsw) # mol H20 m-2 s-1
+        et_store.append(et*18*0.001*86400.) # mm d-1
+        #et_store.append(LE)
+        An_store.append(An) #umol m-2 s-1
+        #An_store.append(An*12.*0.000001*86400.) # g C m-2 d-1
         tair_store.append(ta)
     return gs_store, et_store, An_store, tair_store
 
@@ -211,7 +213,7 @@ if __name__ == '__main__':
 
     ax8.set_xlabel("Air temperature ($^{\circ}$C)")
     ax1.set_ylabel("$E$ (mm d$^{-1}$)")
-    ax4.set_ylabel("$A_{\mathrm{n}}$ (g C m$^{-2}$ d$^{-1}$)")
+    ax4.set_ylabel("$A_{\mathrm{n}}$ ($\mathrm{\mu}$mol m$^{-2}$ s$^{-1}$)")
     ax7.set_ylabel("$g_{\mathrm{s}}$ (mol m$^{-2}$ s$^{-1}$)")
 
     ax1.get_yaxis().set_label_coords(-0.15,0.5)
