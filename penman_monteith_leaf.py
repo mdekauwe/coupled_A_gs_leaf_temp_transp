@@ -16,7 +16,7 @@ __email__ = "mdekauwe@gmail.com"
 
 import math
 import sys
-
+from utils import calc_esat
 
 class PenmanMonteith(object):
 
@@ -86,8 +86,8 @@ class PenmanMonteith(object):
 
         # slope of sat. water vapour pressure (e_sat) to temperature curve
         # (pa K-1), note kelvin conversion in func
-        slope = ((self.calc_esat(tair + 0.1, pressure) -
-                  self.calc_esat(tair, pressure)) / 0.1)
+        slope = ((calc_esat(tair + 0.1, pressure) -
+                  calc_esat(tair, pressure)) / 0.1)
         #slope = self.calc_slope_of_saturation_vapour_pressure_curve(tair)
 
         # psychrometric constant
@@ -221,7 +221,7 @@ class PenmanMonteith(object):
         SW_abs = self.SW_abs * math.cos(math.radians(self.angle)) * SW_rad
 
         # atmospheric water vapour pressure (Pa)
-        ea = max(0.0, self.calc_esat(tair, pressure) - (vpd * self.kpa_2_pa))
+        ea = max(0.0, calc_esat(tair, pressure) - (vpd * self.kpa_2_pa))
 
         # eqn D4
         emissivity_atm = 0.642 * (ea / tair_k)**(1.0 / 7.0)
@@ -233,7 +233,7 @@ class PenmanMonteith(object):
         lw_out = self.emissivity_leaf * self.sigma * tleaf_k**4
 
         # isothermal net radiation (W m-2), note W m-2 = J m-2 s-1
-        
+
         # Rnet < 0.0 causes discontinuity in plot, which I guess isn't there
         # if summing over day/not calculating instantaneous values...
         # set to zero to stop this for instantaneous calculations
@@ -260,52 +260,6 @@ class PenmanMonteith(object):
         arg1 = 4098.0 * (0.6108 * math.exp((17.27 * tair) / t))
         arg2 = t**2
         return (arg1 / arg2) * self.kpa_2_pa
-
-    def calc_esat(self, tair, pressure):
-        """
-        Saturation vapor pressure
-
-        Values of saturation vapour pressure from the Tetens formula are
-        within 1 Pa of the exact values.
-
-        Taken from
-
-        Parameters:
-        ----------
-        tair : float
-            air temperature (deg C)
-        pressure : float
-            air pressure (using constant) (Pa)
-
-        Returns:
-        --------
-        esat : float
-            Saturation vapor pressure (Pa K-1)
-
-        References:
-        * Buck, A. (1981) New equations for computing vapor pressure and
-          enhancement factor. Journal of Applied Meteorology, 20, 1527-1532
-
-        but also see...
-        * Stull 2000 Meteorology for Scientist and Engineers
-        * Jones 1992 p 110 (note error in a - wrong units)
-        """
-        #Tk = tair + self.DEG_TO_KELVIN
-        #e0 = 0.611 * self.kpa_2_pa
-        #b = 17.2694
-        #T1 = 273.16 # kelvin
-        #T2 = 35.86  # kelvin
-
-        #return e0 * math.exp(b * (Tk - T1) / (Tk - T2))
-
-        a = 611.21
-        b = 17.502
-        c = 240.97
-        f = 1.0007 + 3.46 * 10E-8 * pressure
-        esat = f * a * (math.exp(b * tair / (c + tair)))
-
-        return esat
-
 
 
     def main(self, tleaf, tair, gs, vpd, pressure, wind, par):
