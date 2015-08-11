@@ -26,10 +26,9 @@ def vpd_to_rh(vpd, tair, pressure):
 
 def calc_esat(tair, pressure):
     """
-    Saturation vapour pressure or saturation partial pressure of water vappour
+    Saturation vapour pressure or saturation partial pressure of water vapour
 
-    Values of saturation vapour pressure from the Tetens formula are
-    within 1 Pa of the exact values.
+    Calculated following Tetens forumula based on Buck.
 
     Parameters:
     ----------
@@ -44,27 +43,26 @@ def calc_esat(tair, pressure):
         Saturation vapor pressure (Pa K-1)
 
     References:
-    * Jones, H. G. (1992) Plants and microclimate. Second edition, pg 110
-      (note error in a - wrong units)
+    * Buck, A. (1981) New equations for computing vapor pressure and
+      enhancement factor. Journal of Applied Meteorology, 20, 1527-1532
 
     but also see...
     * Stull 2000 Meteorology for Scientist and Engineers
+    * Jones, H. G. (1992) Plants and microclimate. Second edition, pg 110
+      (note error in a - wrong units)
 
-    * Buck, A. (1981) New equations for computing vapor pressure and
-      enhancement factor. Journal of Applied Meteorology, 20, 1527-1532
     """
-    a = 613.75 # correct units
-    b = 17.502
-    c = 240.97
-
-    esat = a * math.exp( (b * tair) / (c + tair) )
+    #a = 613.75 # correct units
+    #b = 17.502
+    #c = 240.97
+    #esat = a * math.exp( (b * tair) / (c + tair) )
 
     # Buck...
-    #a = 611.21 # Pa
-    #b = 17.502
-    #c = 240.97 # deg C
-    #f = 1.0007 + 3.46 * 10E-8 * pressure
-    #esat = f * a * (math.exp(b * tair / (c + tair)))
+    kpa_2_pa = 1000.
+    a = 0.61121 # kPa
+    b = 17.502
+    c = 240.97 # deg C
+    esat = a * (math.exp(b * tair / (c + tair))) * kpa_2_pa
 
     return esat
 
