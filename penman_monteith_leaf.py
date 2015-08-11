@@ -237,11 +237,6 @@ class PenmanMonteith(object):
         # isothermal net radiation (W m-2), note W m-2 = J m-2 s-1
         rnet = SW_abs + (lw_up - lw_dw)
 
-        # Rnet < 0.0 causes discontinuity in plot, which I guess isn't there
-        # if summing over day/not calculating instantaneous values...
-        # set to zero to stop this for instantaneous calculations
-        #rnet = max(0.0, rnet)
-
         return rnet
 
     def calc_slope_of_saturation_vapour_pressure_curve(self, tair):
