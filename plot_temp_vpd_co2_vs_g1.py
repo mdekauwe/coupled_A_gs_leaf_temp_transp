@@ -209,7 +209,7 @@ if __name__ == '__main__':
     ax9.plot(tair_2plot, gs_amb, "g-")
     ax9.plot(tair_2plot, gs_ele, "g--")
 
-    ax8.set_xlabel("Tair ($^{\circ}$C)")
+    ax8.set_xlabel("Air temperature ($^{\circ}$C)")
     ax1.set_ylabel("$E$ (mm d$^{-1}$)")
     ax4.set_ylabel("$A_{\mathrm{n}}$ (g C m$^{-2}$ d$^{-1}$)")
     ax7.set_ylabel("$g_{\mathrm{s}}$ (mol m$^{-2}$ s$^{-1}$)")
