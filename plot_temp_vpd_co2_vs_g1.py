@@ -27,7 +27,7 @@ def get_values(rh, Ca, tair, par, pressure, C):
     esat = calc_esat(tair, pressure)
     ea = rh / 100. * esat
     vpd = (esat - ea) * pa_2_kpa
-    print rh, vpd
+    #print rh, vpd
     gs_store = []
     et_store = []
     An_store = []
