@@ -27,8 +27,7 @@ def get_values(rh, Ca, tair, par, pressure, C):
     esat = calc_esat(tair, pressure)
     ea = rh / 100. * esat
     vpd = (esat - ea) * pa_2_kpa
-    print vpd
-
+    print rh, vpd
     gs_store = []
     et_store = []
     An_store = []
@@ -138,18 +137,18 @@ if __name__ == '__main__':
     #
     ## LEUNING
     #
-    rh = 30.
+    rh = 90.
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
 
-    ax1.plot(tair_2plot, et_amb, "r-")
-    ax1.plot(tair_2plot, et_ele, "r--")
+    ax1.plot(tair_2plot, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair_2plot, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
     ax4.plot(tair_2plot, an_amb, "r-")
     ax4.plot(tair_2plot, an_ele, "r--")
     ax7.plot(tair_2plot, gs_amb, "r-")
     ax7.plot(tair_2plot, gs_ele, "r--")
 
-    vpd = 60.0
+    rh = 50.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
 
@@ -160,34 +159,35 @@ if __name__ == '__main__':
     ax8.plot(tair_2plot, gs_amb, "r-")
     ax8.plot(tair_2plot, gs_ele, "r--")
 
-    rh = 90.0
+    rh = 10.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
 
-    ax3.plot(tair_2plot, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
-    ax3.plot(tair_2plot, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
+    ax3.plot(tair_2plot, et_amb, "r-")
+    ax3.plot(tair_2plot, et_ele, "r--")
     ax6.plot(tair_2plot, an_amb, "r-")
     ax6.plot(tair_2plot, an_ele, "r--")
     ax9.plot(tair_2plot, gs_amb, "r-")
     ax9.plot(tair_2plot, gs_ele, "r--")
+
 
     #
     ## MEDLYN
     #
 
 
-    rh = 30.0
+    rh = 90.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
 
-    ax1.plot(tair_2plot, et_amb, "g-")
-    ax1.plot(tair_2plot, et_ele, "g--")
+    ax1.plot(tair_2plot, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair_2plot, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
     ax4.plot(tair_2plot, an_amb, "g-")
     ax4.plot(tair_2plot, an_ele, "g--")
     ax7.plot(tair_2plot, gs_amb, "g-")
     ax7.plot(tair_2plot, gs_ele, "g--")
 
-    rh = 60.0
+    rh = 50.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
 
@@ -198,12 +198,12 @@ if __name__ == '__main__':
     ax8.plot(tair_2plot, gs_amb, "g-")
     ax8.plot(tair_2plot, gs_ele, "g--")
 
-    rh = 90.0
+    rh = 10.0
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
 
-    ax3.plot(tair_2plot, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
-    ax3.plot(tair_2plot, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
+    ax3.plot(tair_2plot, et_amb, "g-")
+    ax3.plot(tair_2plot, et_ele, "g--")
     ax6.plot(tair_2plot, an_amb, "g-")
     ax6.plot(tair_2plot, an_ele, "g--")
     ax9.plot(tair_2plot, gs_amb, "g-")
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     ax4.get_yaxis().set_label_coords(-0.15,0.5)
     ax7.get_yaxis().set_label_coords(-0.15,0.5)
 
-    ax3.legend(numpoints=1, loc="best", frameon=False)
+    ax1.legend(numpoints=1, loc="best", frameon=False)
 
     ax1.set_ylim(0,4)
     ax2.set_ylim(0,4)
@@ -226,9 +226,9 @@ if __name__ == '__main__':
     ax4.set_ylim(0,15)
     ax5.set_ylim(0,15)
     ax6.set_ylim(0,15)
-    ax7.set_ylim(0,0.15)
-    ax8.set_ylim(0,0.15)
-    ax9.set_ylim(0,0.15)
+    ax7.set_ylim(0,0.18)
+    ax8.set_ylim(0,0.18)
+    ax9.set_ylim(0,0.18)
 
 
     ax1.set_xlim(0,40)
@@ -266,9 +266,9 @@ if __name__ == '__main__':
     plt.setp(ax8.get_yticklabels(), visible=False)
     plt.setp(ax9.get_yticklabels(), visible=False)
 
-    ax1.set_title("RH $=$ 30 %")
-    ax2.set_title("RH $=$ 60 %")
-    ax3.set_title("RH $=$ 90 %")
+    ax1.set_title("RH $=$ 90 %")
+    ax2.set_title("RH $=$ 50 %")
+    ax3.set_title("RH $=$ 10 %")
 
     fig.savefig("/Users/mdekauwe/Desktop/Fig_S01.pdf", bbox_inches='tight',
                 pad_inches=0.1)
