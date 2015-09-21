@@ -234,9 +234,6 @@ class FarquharC3(object):
         else:
             J = Jmax
 
-        #print J, self.alpha, self.theta_J
-        #sys.exit()
-
         Jmax = self.adj_for_low_temp(Jmax, Tleaf)
         Vcmax = self.adj_for_low_temp(Vcmax, Tleaf)
 
@@ -262,17 +259,11 @@ class FarquharC3(object):
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)
-
-        #=(1-D2*Z2)*(K2-J2)+g0param*(H2-D2)-Z2*(K2*I2+H2*J2)
-        B = ((1.0 - Cs * gs_over_a) * (Vcmax - Rd) + g0 *
-             (Km - Cs) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
-
-
-
-        B = ((1.0 - Cs * gs_over_a) * (Vcmax - Rd) + g0 *
-             (Km - Cs) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
+        B = ((1.0 - Cs * gs_over_a) * (Vcmax - Rd) + g0 * (Km - Cs) -
+             gs_over_a * (Vcmax * gamma_star + Km * Rd))
         C = (-(1.0 - Cs * gs_over_a) * (Vcmax * gamma_star + Km * Rd) -
               (g0 * Km * Cs))
+
 
         # intercellular CO2 concentration
         Cic = self.quadratic(a=A, b=B, c=C, large=True)
@@ -287,10 +278,11 @@ class FarquharC3(object):
         Vj = J / 4.0
         A =  g0 + gs_over_a * (Vj - Rd)
         B = ((1. - Cs * gs_over_a) * (Vj - Rd) + g0 * (2. * gamma_star - Cs) -
-             gs_over_a * (Vj * gamma_star + 2.* gamma_star * Rd))
+             gs_over_a * (Vj * gamma_star + 2. * gamma_star * Rd))
         C = (-(1.0 - Cs * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
                g0 * 2. * gamma_star * Cs)
 
+        
         # intercellular CO2 concentration
         Cij = self.quadratic(a=A, b=B, c=C, large=True)
 
