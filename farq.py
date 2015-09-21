@@ -50,7 +50,7 @@ class FarquharC3(object):
       A review of experimental data. Plant, Cell and Enviroment 25, 1167-1179.
     """
 
-    def __init__(self, peaked_Jmax=False, peaked_Vcmax=False, Oi=205.0,
+    def __init__(self, peaked_Jmax=False, peaked_Vcmax=False, Oi=210.0,
                  gamstar25=42.75, Kc25=404.9, Ko25=278.4, Ec=79430.0,
                  Eo=36380.0, Eag=37830.0, theta_hyperbol=0.9995,
                  theta_J=0.7, force_vcmax_fit_pts=None,
@@ -228,10 +228,14 @@ class FarquharC3(object):
                                b=-(self.alpha * Par + Jmax),
                                c=self.alpha * Par * Jmax,
                                large=False)
-
+            #thetax = 0.1
+            #J = ((self.alpha*Par+Jmax)-np.sqrt((self.alpha*Par+Jmax)**2-4*thetax*self.alpha*Par*Jmax))/(2*thetax)
         # all measurements are calculated under saturated light!!
         else:
             J = Jmax
+
+        #print J, self.alpha, self.theta_J
+        #sys.exit()
 
         Jmax = self.adj_for_low_temp(Jmax, Tleaf)
         Vcmax = self.adj_for_low_temp(Vcmax, Tleaf)
@@ -258,6 +262,13 @@ class FarquharC3(object):
 
         # Solution when Rubisco activity is limiting
         A = g0 + gs_over_a * (Vcmax - Rd)
+
+        #=(1-D2*Z2)*(K2-J2)+g0param*(H2-D2)-Z2*(K2*I2+H2*J2)
+        B = ((1.0 - Cs * gs_over_a) * (Vcmax - Rd) + g0 *
+             (Km - Cs) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
+
+
+
         B = ((1.0 - Cs * gs_over_a) * (Vcmax - Rd) + g0 *
              (Km - Cs) - gs_over_a * (Vcmax * gamma_star + Km * Rd))
         C = (-(1.0 - Cs * gs_over_a) * (Vcmax * gamma_star + Km * Rd) -
@@ -283,6 +294,8 @@ class FarquharC3(object):
         # intercellular CO2 concentration
         Cij = self.quadratic(a=A, b=B, c=C, large=True)
 
+        #print Cic, Cij
+        #sys.exit()
         Aj = self.assim(Cij, gamma_star, a1=Vj, a2=2.0*gamma_star)
         # Below light compensation point?
         if Aj - Rd < 1E-6:
