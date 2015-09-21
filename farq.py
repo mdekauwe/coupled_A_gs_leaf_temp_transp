@@ -282,7 +282,6 @@ class FarquharC3(object):
         C = (-(1.0 - Cs * gs_over_a) * gamma_star * (Vj + 2.0 * Rd) -
                g0 * 2. * gamma_star * Cs)
 
-        
         # intercellular CO2 concentration
         Cij = self.quadratic(a=A, b=B, c=C, large=True)
 
