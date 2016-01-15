@@ -23,8 +23,8 @@ class CoupledModel(object):
     """Iteratively solve leaf temp, Ci, gs and An."""
 
     def __init__(self, g0, g1, D0, gamma, Vcmax25, Jmax25, Rd25, Eaj, Eav,
-                 deltaSj, deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs, gs_model,
-                 leaf_absorptance=0.5, iter_max=100):
+                 deltaSj, deltaSv, Hdv, Hdj, Q10, leaf_width, SW_abs,
+                 gs_model, alpha=None, leaf_absorptance=0.5, iter_max=100):
 
         # set params
         self.g0 = g0
@@ -42,7 +42,7 @@ class CoupledModel(object):
         self.Hdj = Hdj
         self.Q10 = Q10
         self.leaf_width = leaf_width
-
+        self.alpha = alpha
         self.SW_abs = SW_abs
         self.gs_model = gs_model
         self.iter_max = iter_max
@@ -100,7 +100,7 @@ class CoupledModel(object):
 
         F = FarquharC3(peaked_Jmax=True, peaked_Vcmax=True, model_Q10=True,
                        gs_model=self.gs_model, gamma=self.gamma, g0=self.g0,
-                       g1=self.g1, D0=self.D0)
+                       g1=self.g1, D0=self.D0, alpha=self.alpha)
         P = PenmanMonteith(self.leaf_width, self.leaf_absorptance)
 
         # set initialise values

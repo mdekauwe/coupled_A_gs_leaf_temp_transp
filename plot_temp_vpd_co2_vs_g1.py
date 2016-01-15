@@ -272,6 +272,6 @@ if __name__ == '__main__':
     ax2.set_title("RH $=$ 50 %")
     ax3.set_title("RH $=$ 10 %")
 
-    fig.savefig("/Users/mdekauwe/Desktop/Fig_S01.pdf", bbox_inches='tight',
-                pad_inches=0.1)
+    fig.savefig("/Users/%s/Desktop/Fig_S01.pdf" % (os.getlogin()),
+                bbox_inches='tight', pad_inches=0.1)
     plt.show()
