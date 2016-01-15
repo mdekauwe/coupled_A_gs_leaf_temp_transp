@@ -307,6 +307,7 @@ class FarquharC3(object):
         Ajn = Aj - Rd
 
         gsc = max(self.g0, self.g0 + gs_over_a * An)
+        
 
         return (An, Acn, Ajn, gsc)
 

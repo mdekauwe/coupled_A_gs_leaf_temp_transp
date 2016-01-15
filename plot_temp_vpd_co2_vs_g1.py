@@ -27,7 +27,7 @@ def get_values(rh, Ca, tair, par, pressure, C):
     esat = calc_esat(tair, pressure)
     ea = rh / 100. * esat
     vpd = (esat - ea) * pa_2_kpa
-    print rh, vpd
+    #print rh, vpd
     gs_store = []
     et_store = []
     An_store = []
@@ -143,8 +143,8 @@ if __name__ == '__main__':
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CL)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CL)
 
-    ax1.plot(tair_2plot, et_amb, "r-", label="LEU: %d (ppm)" % (int(Ca1)))
-    ax1.plot(tair_2plot, et_ele, "r--", label="LEU: %d (ppm)" % (int(Ca2)))
+    ax1.plot(tair_2plot, et_amb, "r-", label="Control: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair_2plot, et_ele, "r--", label="Control: %d (ppm)" % (int(Ca2)))
     ax4.plot(tair_2plot, an_amb, "r-")
     ax4.plot(tair_2plot, an_ele, "r--")
     ax7.plot(tair_2plot, gs_amb, "r-")
@@ -182,8 +182,8 @@ if __name__ == '__main__':
     (gs_amb, et_amb, an_amb, tair_2plot) = get_values(rh, Ca1, tair, par, pressure, CM)
     (gs_ele, et_ele, an_ele, tair_2plot) = get_values(rh, Ca2, tair, par, pressure, CM)
 
-    ax1.plot(tair_2plot, et_amb, "g-", label="MED: %d (ppm)" % (int(Ca1)))
-    ax1.plot(tair_2plot, et_ele, "g--", label="MED: %d (ppm)" % (int(Ca2)))
+    ax1.plot(tair_2plot, et_amb, "g-", label="Experiment: %d (ppm)" % (int(Ca1)))
+    ax1.plot(tair_2plot, et_ele, "g--", label="Experiment: %d (ppm)" % (int(Ca2)))
     ax4.plot(tair_2plot, an_amb, "g-")
     ax4.plot(tair_2plot, an_ele, "g--")
     ax7.plot(tair_2plot, gs_amb, "g-")
@@ -212,7 +212,7 @@ if __name__ == '__main__':
     ax9.plot(tair_2plot, gs_ele, "g--")
 
     ax8.set_xlabel("Air temperature ($^{\circ}$C)")
-    ax1.set_ylabel("$E$ (mm d$^{-1}$)")
+    ax1.set_ylabel("$E$ (mm day$^{-1}$)")
     ax4.set_ylabel("$A_{\mathrm{n}}$ ($\mathrm{\mu}$mol m$^{-2}$ s$^{-1}$)")
     ax7.set_ylabel("$g_{\mathrm{s}}$ (mol m$^{-2}$ s$^{-1}$)")
 

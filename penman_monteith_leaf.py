@@ -42,7 +42,9 @@ class PenmanMonteith(object):
         self.GBH_2_GBW = 1.075
 
         self.angle = angle              # angle from horizontal (deg) 0-90
-        self.PAR_2_SW = 2.0 / self.umol_to_j
+        #self.PAR_2_SW = 2.0 / self.umol_to_j
+        self.SW_2_PAR = 2.3
+        self.PAR_2_SW = 1.0 / self.SW_2_PAR
 
     def calc_et(self, tleaf, tair, vpd, pressure, wind, par, gh, gw,
                 rnet):
@@ -214,12 +216,12 @@ class PenmanMonteith(object):
             Net radiation (J m-2 s-1 = W m-2)
 
         """
-
+        leaf_abs = 0.5
         # Short wave radiation (W m-2)
         SW_rad = par * self.PAR_2_SW
 
         # absorbed short-wave radiation
-        SW_abs = self.SW_abs * math.cos(math.radians(self.angle)) * SW_rad
+        #SW_abs = self.SW_abs * math.cos(math.radians(self.angle)) * SW_rad
 
         # atmospheric water vapour pressure (Pa)
         ea = max(0.0, calc_esat(tair, pressure) - (vpd * self.kpa_2_pa))
@@ -228,14 +230,12 @@ class PenmanMonteith(object):
         # eqn D4
         emissivity_atm = 0.642 * (ea / tair_k)**(1.0 / 7.0)
 
-        # downward long-wave radiation from the sky (W m-2)
-        lw_dw = emissivity_atm * self.sigma * tair_k**4
+        # isothermal net LW radiaiton at top of canopy, assuming emissivity of
+        # the canopy is 1
+        net_lw_rad = (1.0 - emissivity_atm) * self.sigma * tair_k**4
 
-        # outgoing long-wave radiation at the top of the canopy (leaf) (W m-2)
-        lw_up = self.emissivity_leaf * self.sigma * tleaf_k**4
-
-        # isothermal net radiation (W m-2), note W m-2 = J m-2 s-1
-        rnet = SW_abs + (lw_up - lw_dw)
+        # isothermal net radiation (W m-2)
+        rnet = self.SW_abs * SW_rad - net_lw_rad #* kd * exp(-kd * s->lai)
 
         return rnet
 
