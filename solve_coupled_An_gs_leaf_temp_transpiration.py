@@ -251,6 +251,7 @@ if __name__ == '__main__':
     Hdv = 200000.0
     Hdj = 200000.0
     Q10 = 2.0
+    gamma = 0.0
 
     # Misc stuff
     leaf_width = 0.02
@@ -265,8 +266,8 @@ if __name__ == '__main__':
     wind = 2.5
     pressure = 101325.0
     Ca = 400.0
-
-    C = CoupledModel(g0, g1, D0, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
+ 
+    C = CoupledModel(g0, g1, D0, gamma, Vcmax25, Jmax25, Rd25, Eaj, Eav, deltaSj,
                      deltaSv, Hdv, Hdj, Q10, leaf_width, leaf_absorptance,
                      gs_model="leuning")
     (An, gs, et) = C.main(tair, par, vpd, wind, pressure, Ca)
