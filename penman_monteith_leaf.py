@@ -292,4 +292,4 @@ if __name__ == '__main__':
     P = PenmanMonteith(leaf_width, SW_abs, angle)
     (et, lambda_et) = P.main(tleaf, tair, gs, vpd, pressure, wind, par)
 
-    print et, lambda_et
+    print(et, lambda_et)
