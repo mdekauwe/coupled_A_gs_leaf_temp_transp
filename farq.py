@@ -311,7 +311,7 @@ class FarquharC3(object):
         Ajn = Aj - Rd
 
         gsc = max(self.g0, self.g0 + gs_over_a * An)
-        
+
 
         return (An, Acn, Ajn, gsc)
 
@@ -374,7 +374,7 @@ class FarquharC3(object):
 
         except AttributeError:
             err_msg = "Supplied arguments are a mess!"
-            raise AttributeError, err_msg
+            raise AttributeError(err_msg)
 
     def calc_michaelis_menten_constants(self, Tleaf):
         """ Michaelis-Menten constant for O2/CO2, Arrhenius temp dependancy

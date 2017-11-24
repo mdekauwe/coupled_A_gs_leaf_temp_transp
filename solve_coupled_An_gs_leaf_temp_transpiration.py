@@ -127,7 +127,7 @@ class CoupledModel(object):
                                               Rd25=self.Rd25, Hdv=self.Hdv,
                                               Hdj=self.Hdj, vpd=dleaf)
 
-            
+
 
             # Calculate new Tleaf, dleaf, Cs
             (new_tleaf, et, le_et, gbH, gw) = self.calc_leaf_temp(P, Tleaf, tair, gsc,

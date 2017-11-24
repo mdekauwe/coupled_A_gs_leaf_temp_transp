@@ -216,7 +216,7 @@ class PenmanMonteith(object):
             Net radiation (J m-2 s-1 = W m-2)
 
         """
-        leaf_abs = 0.5
+
         # Short wave radiation (W m-2)
         SW_rad = par * self.PAR_2_SW
 
